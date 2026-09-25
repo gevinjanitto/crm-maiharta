@@ -1,0 +1,36 @@
+{
+  "summary": "Ran deployment-change focused pytest (12 cases) + full Playwright UI smoke on the Vercel/Railway CRM Maiharta build. Backend health, root API, CORS preflight (echoes Origin + credentials:true), all 5 seed roles login, /api/auth/me Bearer flow, logout-invalidates-token, and full frontend flow (admin login → dashboard KPIs → sidebar-logo /assets/logo-mark.webp → no toggle-theme → light body bg rgb(243,245,250) → localStorage.maiharta_token persists across reload → nav /projects /clients /finance /tickets /users /settings without console errors → logout clears token & returns to /login) all PASS. Login page has correct data-testids (login-brand-mark, login-copyright '© 2026 CRM Maiharta', login-credit-link -> https://www.maiharta.com), no data-testid='footer', no CRAFTED/Built-for text. Role gating verified: client has no Keuangan menu; accounting has no Tiket Client menu. Existing regression suite test_api_regression.py NOT re-run because its document upload/workflow tests assert 200 responses that will now fail against the intentionally-503 Cloudinary path — flagged for main agent. ONE bug found: backend raises HTTPException(502) on Cloudinary failure but review request (and Cloudflare ingress behavior) requires 503 so client sees the Indonesian JSON message instead of a Cloudflare HTML error page.",
+  "backend_issues": {
+    "critical": [
+      {"endpoint": "POST /api/projects/{pid}/documents", "issue": "Returns HTTP 502 when Cloudinary env is not configured (backend/projects.py line 162 & 177). The Kubernetes/Cloudflare ingress converts 502 into an HTML error page, so the client never receives the intended Indonesian JSON message. Change status_code to 503 (Service Unavailable) as requested. Same fix needed for download_document line 177.", "priority": "HIGH"}
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_deployment_changes.py",
+    "/app/test_reports/pytest/deployment_changes.xml"
+  ],
+  "action_items": [
+    "In /app/backend/projects.py replace HTTPException(502,'Penyimpanan dokumen (Cloudinary) belum dapat dihubungi...') with HTTPException(503, ...) on lines 162 and 177 so the ingress does not swallow the response body.",
+    "Update /app/backend/tests/test_api_regression.py: document upload tests (test_document_upload_download_and_validation and test_workflow_development_requires_four_documents) will fail against the current Cloudinary-less deployment because they assume 200 uploads — either mark them skip when CLOUDINARY_CLOUD_NAME is empty, or update expectations to 503."
+  ],
+  "critical_code_review_comments": [
+    "backend/projects.py line 162 & 177 use 502 for a dependency-configuration failure — 503 Service Unavailable is the correct semantic and also avoids Cloudflare converting the response to HTML.",
+    "test_api_regression.py has tight coupling with Cloudinary being configured; consider a pytest marker/skip based on env presence of CLOUDINARY_* so the suite remains green in the preview environment."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_deployment_changes.py (new)"
+  ],
+  "success_rate": {"backend": "92% (11/12 focused tests)", "frontend": "100% of listed UI checks"},
+  "test_credentials": "admin/adminproject/developer/accounting/client — password MaiHarta!642a8bda (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "None — only login was performed; no CRUD writes.",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "After main agent flips 502→503 in projects.py, rerun `REACT_APP_BACKEND_URL=... pytest /app/backend/tests/test_deployment_changes.py::test_document_upload_returns_503_when_cloudinary_missing` to confirm. Full regression at /app/backend/tests/test_api_regression.py was intentionally not rerun since its upload/workflow tests assume Cloudinary is configured (they will 502/503 fail). UI is fully working; no rework needed on frontend.",
+  "rca of the issue": "The Kubernetes ingress + Cloudflare in front of the preview URL treat backend 502 responses as an upstream failure and return their own HTML error page (observed as an HTML body starting with <!DOCTYPE html> / 'oldie' IE conditional-comment template), which strips the JSON detail message the FastAPI handler set. HTTP 503 is not intercepted, so returning 503 preserves the intended JSON `{detail: 'Penyimpanan dokumen (Cloudinary) belum dapat dihubungi...'}` to the client. Reproduction: `curl -X POST -H 'Authorization: Bearer <admin>' -F kind=Kontrak -F visibility=Internal -F file=@tiny.txt <URL>/api/projects/project-1/documents` returns 502 + Cloudflare HTML. Fix: change status codes 502→503 in backend/projects.py lines 162 and 177."
+}

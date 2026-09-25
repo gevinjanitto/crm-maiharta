@@ -159,7 +159,7 @@ async def upload_document(pid:str,file:UploadFile=File(...),kind:str=Form(...),v
     try: result=await asyncio.to_thread(put_object,f'crm-maiharta/uploads/{u["id"]}/{doc_id}{ext}',data,file.content_type or 'application/octet-stream')
     except Exception as e:
         logging.getLogger(__name__).warning('Cloudinary upload gagal: %s', e)
-        raise HTTPException(502,'Penyimpanan dokumen (Cloudinary) belum dapat dihubungi. Periksa konfigurasi CLOUDINARY_* di server.')
+        raise HTTPException(503,'Penyimpanan dokumen (Cloudinary) belum dapat dihubungi. Periksa konfigurasi CLOUDINARY_* di server.')
     doc={'id':doc_id,'project_id':pid,'name':Path(file.filename).name,'kind':kind,'visibility':visibility,'size':len(data),'storage_path':result['path'],'content_type':file.content_type or 'application/octet-stream','created_at':now(),'uploaded_by':u['name'],'is_deleted':False}
     await db.project_documents.insert_one(doc.copy())
     doc.pop('storage_path')
@@ -174,7 +174,7 @@ async def download_document(pid:str,did:str,u=Depends(current_user)):
     d=await db.project_documents.find_one(q,{'_id':0})
     if not d: raise HTTPException(404,'Dokumen tidak ditemukan.')
     try: content=await asyncio.to_thread(get_object,d['storage_path'])
-    except Exception: raise HTTPException(502,'Dokumen belum dapat diunduh.')
+    except Exception: raise HTTPException(503,'Dokumen belum dapat diunduh.')
     return Response(content,media_type=d['content_type'],headers={'Content-Disposition':f"attachment; filename*=UTF-8''{quote(d['name'])}",'X-Content-Type-Options':'nosniff'})
 
 @router.delete('/projects/{pid}/documents/{did}')
