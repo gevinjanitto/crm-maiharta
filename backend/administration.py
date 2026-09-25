@@ -1,10 +1,29 @@
 import csv, io
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 from datetime import datetime, timezone
 from fastapi import APIRouter,Depends,HTTPException,Response
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from core import db,uid,now,authorize,project_scope,project_public,log_activity,FINANCE,MANAGERS,STATUSES,DEFAULT_CLIENT_PASSWORD
+<<<<<<< HEAD
+=======
+=======
+from fastapi import APIRouter,Depends,HTTPException,Response
+<<<<<<< HEAD
+from core import db,uid,now,authorize,project_scope,project_public,log_activity,FINANCE,MANAGERS,STATUSES,DEFAULT_CLIENT_PASSWORD
+=======
+<<<<<<< HEAD
+from core import db,uid,now,authorize,project_scope,project_public,FINANCE,MANAGERS,STATUSES,DEFAULT_CLIENT_PASSWORD
+=======
+from core import db,uid,now,authorize,project_scope,project_public,FINANCE,MANAGERS,STATUSES
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 from auth import current_user,hash_password,public_user
 from schemas import Record,ClientInput,UserInput,UserUpdate
 
@@ -27,7 +46,18 @@ async def add_user(data:UserInput,u=Depends(current_user)):
     row.update(id=uid(),username=data.username.lower(),password_hash=hash_password(data.password),active=True,created_at=now())
     try: await db.users.insert_one(row.copy())
     except Exception: raise HTTPException(409,'Username sudah digunakan.')
+<<<<<<< HEAD
     await log_activity(u,'buat','user',row['id'],row['name'],'',{'role':row['role']})
+=======
+<<<<<<< HEAD
+    await log_activity(u,'buat','user',row['id'],row['name'],'',{'role':row['role']})
+=======
+<<<<<<< HEAD
+    await log_activity(u,'buat','user',row['id'],row['name'],'',{'role':row['role']})
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     return public_user(row)
 @router.patch('/users/{user_id}',response_model=Record)
 async def edit_user(user_id:str,data:UserUpdate,u=Depends(current_user)):
@@ -43,7 +73,18 @@ async def edit_user(user_id:str,data:UserUpdate,u=Depends(current_user)):
     merged={**row,**updates}
     if merged['role']=='Client' and not await db.clients.find_one({'id':merged.get('client_id','')},{'_id':0}): raise HTTPException(400,'Pilih client untuk akun ini.')
     await db.users.update_one({'id':user_id},{'$set':updates})
+<<<<<<< HEAD
     await log_activity(u,'ubah','user',user_id,row['name'],'',{k:v for k,v in updates.items() if k!='password_hash'}|({'reset_password':True} if new_password else {}))
+=======
+<<<<<<< HEAD
+    await log_activity(u,'ubah','user',user_id,row['name'],'',{k:v for k,v in updates.items() if k!='password_hash'}|({'reset_password':True} if new_password else {}))
+=======
+<<<<<<< HEAD
+    await log_activity(u,'ubah','user',user_id,row['name'],'',{k:v for k,v in updates.items() if k!='password_hash'}|({'reset_password':True} if new_password else {}))
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     if updates.get('active') is False: await db.sessions.delete_many({'user_id':user_id})
     return public_user(merged)
 
@@ -58,13 +99,37 @@ async def add_client(data:ClientInput,u=Depends(current_user)):
     await authorize(u,'client.write')
     row={**data.model_dump(),'id':uid(),'created_at':now()}
     await db.clients.insert_one(row.copy())
+<<<<<<< HEAD
     await log_activity(u,'buat','client',row['id'],row['name'])
+=======
+<<<<<<< HEAD
+    await log_activity(u,'buat','client',row['id'],row['name'])
+=======
+<<<<<<< HEAD
+    await log_activity(u,'buat','client',row['id'],row['name'])
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     username=data.email.lower()
     account={'username':username,'created':False}
     if not await db.users.find_one({'username':username},{'_id':0,'id':1}):
         await db.users.insert_one({'id':uid(),'username':username,'name':data.contact,'role':'Client','email':data.email,'client_id':row['id'],'password_hash':hash_password(DEFAULT_CLIENT_PASSWORD),'active':True,'must_change_password':True,'created_at':now()})
         account.update(created=True,password=DEFAULT_CLIENT_PASSWORD)
     return {**row,'account':account}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+    return row
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 @router.patch('/clients/{cid}',response_model=Record)
 async def edit_client(cid:str,data:ClientInput,u=Depends(current_user)):
     await authorize(u,'client.write')
@@ -78,7 +143,18 @@ async def delete_client(cid:str,u=Depends(current_user)):
     if await db.projects.count_documents({'client_id':cid}) or await db.users.count_documents({'client_id':cid}): raise HTTPException(400,'Client masih terhubung dengan project atau akun.')
     r=await db.clients.delete_one({'id':cid})
     if not r.deleted_count: raise HTTPException(404,'Client tidak ditemukan.')
+<<<<<<< HEAD
     await log_activity(u,'hapus','client',cid,'')
+=======
+<<<<<<< HEAD
+    await log_activity(u,'hapus','client',cid,'')
+=======
+<<<<<<< HEAD
+    await log_activity(u,'hapus','client',cid,'')
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     return {'message':'Client dihapus.'}
 
 @router.get('/dashboard')
@@ -97,8 +173,28 @@ async def dashboard(u=Depends(current_user)):
         result['active_revisions']=await db.revisions.count_documents({'project_id':{'$in':ids},'status':{'$ne':'Selesai'}})
         result['active_maintenance']=await db.maintenances.count_documents({'project_id':{'$in':ids},'status':{'$ne':'Selesai'}})
     if u['role'] in FINANCE:
+<<<<<<< HEAD
         result['finance']={k:sum(p.get(k,0) for p in rows) for k in ['value','development_cost','server_cost','other_cost']}
         result['finance']['profit']=result['finance']['value']-result['finance']['development_cost']-result['finance']['server_cost']-result['finance']['other_cost']
+=======
+<<<<<<< HEAD
+        result['finance']={k:sum(p.get(k,0) for p in rows) for k in ['value','development_cost','server_cost','other_cost']}
+        result['finance']['profit']=result['finance']['value']-result['finance']['development_cost']-result['finance']['server_cost']-result['finance']['other_cost']
+=======
+<<<<<<< HEAD
+        result['finance']={k:sum(p.get(k,0) for p in rows) for k in ['value','development_cost','server_cost','other_cost']}
+        result['finance']['profit']=result['finance']['value']-result['finance']['development_cost']-result['finance']['server_cost']-result['finance']['other_cost']
+=======
+<<<<<<< HEAD
+        result['finance']={k:sum(p.get(k,0) for p in rows) for k in ['value','development_cost','server_cost','other_cost']}
+        result['finance']['profit']=result['finance']['value']-result['finance']['development_cost']-result['finance']['server_cost']-result['finance']['other_cost']
+=======
+        result['finance']={k:sum(p.get(k,0) for p in rows) for k in ['value','development_cost','server_cost']}
+        result['finance']['profit']=result['finance']['value']-result['finance']['development_cost']-result['finance']['server_cost']
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     elif u['role']=='Admin Project': result['total_value']=sum(p.get('value',0) for p in rows)
     histories=await db.project_status_logs.find({'project_id':{'$in':ids}},{'_id':0}).sort('created_at',-1).to_list(30)
     names={p['id']:p['name'] for p in rows}
@@ -121,6 +217,10 @@ async def report(u=Depends(current_user)):
         values=[p['code'],p['name'],p['client_name'],p['status'],p['progress'],p['due_date']]
         if u['role'] in FINANCE: values += [p['value'],p.get('development_cost',0),p.get('server_cost',0),p['value']-p.get('development_cost',0)-p.get('server_cost',0)]
         writer.writerow([safe(v) for v in values])
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     return Response('\ufeff'+stream.getvalue(),media_type='text/csv; charset=utf-8',headers={'Content-Disposition':'attachment; filename=laporan-project-maiharta.csv'})
 
 @router.get('/reports/projects.xlsx')
@@ -201,4 +301,11 @@ async def report_xlsx(u=Depends(current_user)):
     buf=io.BytesIO(); wb.save(buf); buf.seek(0)
     return Response(buf.getvalue(),
         media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+<<<<<<< HEAD
         headers={'Content-Disposition':'attachment; filename=laporan-project-maiharta.xlsx'})
+=======
+        headers={'Content-Disposition':'attachment; filename=laporan-project-maiharta.xlsx'})
+=======
+    return Response('\ufeff'+stream.getvalue(),media_type='text/csv; charset=utf-8',headers={'Content-Disposition':'attachment; filename=laporan-project-maiharta.csv'})
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394

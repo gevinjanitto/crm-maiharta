@@ -1,16 +1,53 @@
 import React, { useEffect, useState } from "react";
+<<<<<<< HEAD
 import { Paperclip, X } from "lucide-react";
+=======
+<<<<<<< HEAD
+import { Paperclip, X } from "lucide-react";
+=======
+<<<<<<< HEAD
+import { Paperclip, X } from "lucide-react";
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 import { toast } from "sonner";
 import { api, errorText } from "../lib/api";
 import { Modal, Field, SaveButton } from "./Common";
 import { Button } from "./ui/button";
+<<<<<<< HEAD
 const PLATFORMS = ["Web", "Mobile Android", "Mobile iOS", "Desktop", "UI/UX Design", "Lainnya"];
+=======
+<<<<<<< HEAD
+const PLATFORMS = ["Web", "Mobile Android", "Mobile iOS", "Desktop", "UI/UX Design", "Lainnya"];
+=======
+<<<<<<< HEAD
+const PLATFORMS = ["Web", "Mobile Android", "Mobile iOS", "Desktop", "UI/UX Design", "Lainnya"];
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 export const ProjectForm = ({ open, onClose, onSaved, project }) => {
   const [clients, setClients] = useState([]),
     [team, setTeam] = useState([]),
     [busy, setBusy] = useState(false),
+<<<<<<< HEAD
     [error, setError] = useState(""),
     [files, setFiles] = useState([]);
+=======
+<<<<<<< HEAD
+    [error, setError] = useState(""),
+    [files, setFiles] = useState([]);
+=======
+<<<<<<< HEAD
+    [error, setError] = useState(""),
+    [files, setFiles] = useState([]);
+=======
+    [error, setError] = useState("");
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
   const [form, setForm] = useState({}),
     [newClient, setNewClient] = useState(null),
     [savingClient, setSavingClient] = useState(false);
@@ -33,6 +70,13 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
       setSavingClient(false);
     }
   };
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
   useEffect(() => {
     if (!open) return;
     setError("");
@@ -55,11 +99,53 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
             ),
             platforms: project.platforms || [],
           }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+=======
+  const [form, setForm] = useState({});
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+  useEffect(() => {
+    if (!open) return;
+    setError("");
+    setForm(
+      project
+        ? Object.fromEntries(
+            [
+              "name",
+              "client_id",
+              "description",
+              "category",
+              "type",
+              "value",
+              "start_date",
+              "due_date",
+              "assigned_to",
+              "internal_notes",
+            ].map((k) => [k, project[k] ?? ""]),
+          )
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
         : {
             name: "",
             client_id: "",
             description: "",
+<<<<<<< HEAD
             platforms: ["Web"],
+=======
+<<<<<<< HEAD
+            platforms: ["Web"],
+=======
+<<<<<<< HEAD
+            platforms: ["Web"],
+=======
+            category: "Web Development",
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
             type: "Besar",
             value: 0,
             start_date: new Date().toISOString().slice(0, 10),
@@ -87,15 +173,37 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
     e.preventDefault();
     setBusy(true);
     setError("");
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     if (!(form.platforms || []).length) {
       setError("Pilih minimal satu platform.");
       setBusy(false);
       return;
     }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     try {
       const r = project
         ? await api.patch(`/projects/${project.id}`, form)
         : await api.post("/projects", form);
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
       for (const f of files) {
         const fd = new FormData();
         fd.append("file", f);
@@ -105,6 +213,14 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
           .post(`/projects/${r.data.id}/documents`, fd)
           .catch((e) => toast.error(`${f.name}: ${errorText(e)}`));
       }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
       toast.success(project ? "Project diperbarui" : "Project berhasil dibuat");
       onSaved(r.data);
       onClose();
@@ -133,6 +249,16 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
               required
             />
           </div>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
           <div>
             <Field
               label="Client"
@@ -226,6 +352,13 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
               </div>
             </div>
           )}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
           <div className="form-full">
             <p className="form-note">
               Platform <em className="req-mark">*</em>{" "}
@@ -255,6 +388,43 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
               })}
             </div>
           </div>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+=======
+          <Field
+            label="Client"
+            name="client_id"
+            as="select"
+            options={[
+              { value: "", label: "Pilih client" },
+              ...clients.map((c) => ({ value: c.id, label: c.name })),
+            ]}
+            value={form.client_id || ""}
+            onChange={change}
+            required
+          />
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+          <Field
+            label="Kategori"
+            name="category"
+            as="select"
+            options={[
+              "Web Development",
+              "Web Application",
+              "E-Commerce",
+              "Mobile Application",
+              "UI/UX Design",
+              "Lainnya",
+            ]}
+            value={form.category || "Web Development"}
+            onChange={change}
+          />
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
           <Field
             label="Skala project"
             name="type"
@@ -262,7 +432,18 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
             options={["Besar", "Kecil"]}
             value={form.type || "Besar"}
             onChange={change}
+<<<<<<< HEAD
             required
+=======
+<<<<<<< HEAD
+            required
+=======
+<<<<<<< HEAD
+            required
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
           />
           <Field
             label="Nilai project (Rp)"
@@ -300,10 +481,26 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
             />
           </div>
           <div className="form-full">
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
             <p className="form-note">
               Developer yang ditugaskan{" "}
               <small className="opt-mark">(opsional)</small>
             </p>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+            <p className="form-note">Developer yang ditugaskan</p>
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
             {team.map((t) => (
               <label key={t.id} className="checkbox-label">
                 <input
@@ -332,6 +529,13 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
               onChange={change}
             />
           </div>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
           {!project && (
             <div className="form-full">
               <Field
@@ -366,6 +570,15 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
         <p className="form-legend">
           <em>*</em> wajib diisi
         </p>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+        </div>
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
         {error && (
           <p className="form-error" data-testid="project-form-error">
             {error}

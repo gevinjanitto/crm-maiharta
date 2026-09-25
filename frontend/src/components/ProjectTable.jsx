@@ -1,5 +1,12 @@
 import React from "react";
+<<<<<<< HEAD
 import { motion } from "framer-motion";
+=======
+<<<<<<< HEAD
+import { motion } from "framer-motion";
+=======
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 import { Link } from "react-router-dom";
 import {
   ArrowUpRight,
@@ -32,6 +39,10 @@ export const ProjectTable = ({ projects, compact = false }) => (
           {projects.map((p, i) => {
             const Icon = icons[i % 4];
             return (
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
               <motion.tr
                 key={p.id}
                 data-testid={`project-row-${p.id}`}
@@ -39,6 +50,12 @@ export const ProjectTable = ({ projects, compact = false }) => (
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: i * 0.05, ease: "easeOut" }}
               >
+<<<<<<< HEAD
+=======
+=======
+              <tr key={p.id} data-testid={`project-row-${p.id}`}>
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
                 <td>
                   <Link
                     to={`/projects/${p.id}`}
@@ -51,7 +68,19 @@ export const ProjectTable = ({ projects, compact = false }) => (
                     <div>
                       <b>{p.name}</b>
                       <small>
+<<<<<<< HEAD
                         {p.code} · {(p.platforms || [p.category]).join(", ")}
+=======
+<<<<<<< HEAD
+                        {p.code} · {(p.platforms || [p.category]).join(", ")}
+=======
+<<<<<<< HEAD
+                        {p.code} · {(p.platforms || [p.category]).join(", ")}
+=======
+                        {p.code} · {p.category}
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
                       </small>
                     </div>
                   </Link>
@@ -86,7 +115,15 @@ export const ProjectTable = ({ projects, compact = false }) => (
                     <ArrowUpRight size={15} />
                   </Link>
                 </td>
+<<<<<<< HEAD
               </motion.tr>
+=======
+<<<<<<< HEAD
+              </motion.tr>
+=======
+              </tr>
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
             );
           })}
         </tbody>

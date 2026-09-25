@@ -1,6 +1,23 @@
+<<<<<<< HEAD
 import React, { useEffect, useRef, useState } from "react";
 import { Navigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
+=======
+<<<<<<< HEAD
+import React, { useEffect, useRef, useState } from "react";
+import { Navigate } from "react-router-dom";
+import ReCAPTCHA from "react-google-recaptcha";
+=======
+<<<<<<< HEAD
+import React, { useEffect, useRef, useState } from "react";
+import { Navigate } from "react-router-dom";
+import ReCAPTCHA from "react-google-recaptcha";
+=======
+import React, { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
   ArrowRight,
@@ -15,17 +32,50 @@ import {
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { useAuth } from "../App";
+<<<<<<< HEAD
 import { api, errorText, setToken } from "../lib/api";
+=======
+<<<<<<< HEAD
+import { api, errorText, setToken } from "../lib/api";
+=======
+<<<<<<< HEAD
+import { api, errorText, setToken } from "../lib/api";
+=======
+<<<<<<< HEAD
+import { api, errorText, setToken } from "../lib/api";
+=======
+import { api, errorText } from "../lib/api";
+import { Footer } from "../components/Common";
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 
 export default function Login() {
   const { user, setUser, loading } = useAuth();
   const [captcha, setCaptcha] = useState(null),
     [visible, setVisible] = useState(false),
     [busy, setBusy] = useState(false),
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     [error, setError] = useState(""),
     [recaptchaToken, setRecaptchaToken] = useState("");
   const recaptchaRef = useRef(null);
   const siteKey = process.env.REACT_APP_RECAPTCHA_SITE_KEY;
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+    [error, setError] = useState("");
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
   const [form, setForm] = useState({
     username: "",
     password: "",
@@ -44,8 +94,21 @@ export default function Login() {
       const r = await api.get("/auth/captcha");
       setCaptcha(r.data);
       setForm((f) => ({ ...f, captcha_answer: "" }));
+<<<<<<< HEAD
       setRecaptchaToken("");
       recaptchaRef.current?.reset();
+=======
+<<<<<<< HEAD
+      setRecaptchaToken("");
+      recaptchaRef.current?.reset();
+=======
+<<<<<<< HEAD
+      setRecaptchaToken("");
+      recaptchaRef.current?.reset();
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     } catch (e) {
       setError("CAPTCHA belum dapat dimuat. Silakan coba kembali.");
     }
@@ -66,10 +129,31 @@ export default function Login() {
     try {
       const r = await api.post("/auth/login", {
         ...form,
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
         captcha_id: captcha?.id || "",
         recaptcha_token: recaptchaToken,
       });
       setToken(r.data.token);
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+        captcha_id: captcha.id,
+      });
+<<<<<<< HEAD
+      setToken(r.data.token);
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
       setUser(r.data.user);
     } catch (e) {
       setError(errorText(e));
@@ -91,6 +175,36 @@ export default function Login() {
         my.set(0);
       }}
     >
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+      <header className="login-top">
+        <a
+          href="https://www.maiharta.com"
+          target="_blank"
+          rel="noreferrer"
+          data-testid="login-brand-link"
+        >
+          <img
+            src="/assets/logo.webp"
+            alt="MaiHarta"
+            className="brand-logo"
+            data-testid="login-logo"
+          />
+        </a>
+        <span className="login-top-note" data-testid="login-workspace-label">
+          <span className="live-dot" /> Your next great project starts here.
+        </span>
+      </header>
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
       <main className="login-stage">
         <section className="login-visual">
           <div className="visual-grid" />
@@ -141,11 +255,35 @@ export default function Login() {
             </motion.div>
           </div>
           <div className="visual-bottom" data-testid="login-visual-bottom">
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
             <span data-testid="login-copyright">
               © {new Date().getFullYear()} CRM Maiharta
             </span>
             <span>
               <i />
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+            <span>CRAFTED WITH PURPOSE, ROOTED IN BALI.</span>
+            <span>
+              01 — 03 <i />
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
               <i />
               <i />
             </span>
@@ -154,12 +292,36 @@ export default function Login() {
         <section className="login-form-panel">
           <div className="form-panel-inner">
             <div className="workspace-mark" data-testid="workspace-mark">
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
               <img
                 src="/assets/logo-mark.webp"
                 alt="MaiHarta"
                 className="mini-brand"
                 data-testid="login-brand-mark"
               />
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+              <span className="mini-brand">
+                M<span>H</span>
+              </span>
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
               <span>
                 CRM <b>maiharta</b>
               </span>
@@ -228,6 +390,13 @@ export default function Login() {
                 </div>
               </label>
               <div className="captcha-block">
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
                 {captcha?.provider === "recaptcha" ? (
                   <div className="login-field">
                     <span>Verifikasi keamanan</span>
@@ -245,6 +414,14 @@ export default function Login() {
                     </div>
                   </div>
                 ) : (
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
                 <label className="login-field">
                   <span>Verifikasi keamanan</span>
                   <div className="captcha-row">
@@ -275,7 +452,18 @@ export default function Login() {
                     />
                   </div>
                 </label>
+<<<<<<< HEAD
                 )}
+=======
+<<<<<<< HEAD
+                )}
+=======
+<<<<<<< HEAD
+                )}
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
               </div>
               <div className="login-options">
                 <label>
@@ -314,11 +502,27 @@ export default function Login() {
                 data-testid="login-submit"
                 type="submit"
                 className="login-submit"
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
                 disabled={
                   busy ||
                   !captcha ||
                   (captcha.provider === "recaptcha" && !recaptchaToken)
                 }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+                disabled={busy || !captcha}
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
               >
                 {busy ? "Sedang masuk..." : "Masuk ke workspace"}
                 <ArrowRight size={18} />
@@ -330,6 +534,16 @@ export default function Login() {
             </div>
           </div>
           <div className="panel-bottom" data-testid="login-panel-bottom">
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
             <span>
               Design dan develop by{" "}
               <a
@@ -344,6 +558,23 @@ export default function Login() {
           </div>
         </section>
       </main>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+            <span>Built for meaningful collaboration.</span>
+            <ArrowUpRight size={16} />
+          </div>
+        </section>
+      </main>
+      <Footer />
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     </div>
   );
 }

@@ -10,9 +10,26 @@ class Record(BaseModel):
 class Login(Input):
     username: str
     password: str
+<<<<<<< HEAD
     captcha_id: str = ''
     captcha_answer: str = ''
     recaptcha_token: str = ''
+=======
+<<<<<<< HEAD
+    captcha_id: str = ''
+    captcha_answer: str = ''
+    recaptcha_token: str = ''
+=======
+<<<<<<< HEAD
+    captcha_id: str = ''
+    captcha_answer: str = ''
+    recaptcha_token: str = ''
+=======
+    captcha_id: str
+    captcha_answer: str
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     remember: bool = False
 class PasswordChange(Input):
     current_password: str
@@ -40,8 +57,22 @@ class ProjectInput(Input):
     name: str = Field(min_length=3, max_length=150)
     client_id: str
     description: str = ''
+<<<<<<< HEAD
     platforms: list[str] = Field(min_length=1)
     category: str = ''
+=======
+<<<<<<< HEAD
+    platforms: list[str] = Field(min_length=1)
+    category: str = ''
+=======
+<<<<<<< HEAD
+    platforms: list[str] = Field(min_length=1)
+    category: str = ''
+=======
+    category: str = 'Web Development'
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     type: Literal['Kecil','Besar'] = 'Besar'
     value: float = Field(default=0, ge=0)
     start_date: date
@@ -51,9 +82,24 @@ class ProjectInput(Input):
     @model_validator(mode='after')
     def check_dates(self):
         if self.due_date < self.start_date: raise ValueError('Deadline harus setelah tanggal mulai.')
+<<<<<<< HEAD
         self.platforms = [p.strip() for p in self.platforms if p.strip()]
         if not self.platforms: raise ValueError('Pilih minimal satu platform.')
         self.category = ', '.join(self.platforms)
+=======
+<<<<<<< HEAD
+        self.platforms = [p.strip() for p in self.platforms if p.strip()]
+        if not self.platforms: raise ValueError('Pilih minimal satu platform.')
+        self.category = ', '.join(self.platforms)
+=======
+<<<<<<< HEAD
+        self.platforms = [p.strip() for p in self.platforms if p.strip()]
+        if not self.platforms: raise ValueError('Pilih minimal satu platform.')
+        self.category = ', '.join(self.platforms)
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
         return self
 class StatusInput(Input):
     status: str
@@ -74,6 +120,13 @@ class WorkInput(Input):
     description: str = ''
     kind: str
     assigned_to: str = ''
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     entry_date: Optional[date] = None
     started_date: Optional[date] = None
     due_date: Optional[date] = None
@@ -107,6 +160,38 @@ class TaskUpdate(Input):
     tags: Optional[list[str]] = None
     estimate_hours: Optional[float] = Field(default=None, ge=0)
     order: Optional[float] = None
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+    due_date: date
+    estimate: float = Field(default=0, ge=0)
+<<<<<<< HEAD
+    subtasks: list[str] = []
+TaskStatus = Literal['Belum Mulai','Dikerjakan','Testing','Revisi','Selesai']
+ServerStage = Literal['Belum Naik','Dev Server','Production']
+Priority = Literal['Rendah','Sedang','Tinggi','Mendesak']
+class TaskInput(Input):
+    title: str = Field(min_length=2, max_length=200)
+    description: str = ''
+    status: TaskStatus = 'Belum Mulai'
+    server: ServerStage = 'Belum Naik'
+    assigned_to: str = ''
+    due_date: Optional[date] = None
+    priority: Priority = 'Sedang'
+    subtasks: list[str] = []
+class TaskUpdate(Input):
+    title: Optional[str] = Field(default=None, min_length=2, max_length=200)
+    description: Optional[str] = None
+    status: Optional[TaskStatus] = None
+    server: Optional[ServerStage] = None
+    assigned_to: Optional[str] = None
+    due_date: Optional[date] = None
+    priority: Optional[Priority] = None
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 class SubtaskInput(Input):
     title: str = Field(min_length=1, max_length=200)
     assigned_to: str = ''
@@ -114,6 +199,13 @@ class SubtaskUpdate(Input):
     title: Optional[str] = Field(default=None, min_length=1, max_length=200)
     done: Optional[bool] = None
     assigned_to: Optional[str] = None
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 class StatusColumnInput(Input):
     name: str = Field(min_length=1, max_length=40)
     color: str = Field(default='#87909e', pattern=r'^#[0-9a-fA-F]{6}$')
@@ -136,6 +228,14 @@ class BulkTaskInput(Input):
     assigned_to: Optional[str] = None
     priority: Optional[Priority] = None
     delete: bool = False
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 CostGroup = Literal['Development','Server','Lainnya']
 class CostTypeInput(Input):
     name: str = Field(min_length=2, max_length=100)
@@ -151,6 +251,13 @@ class ExpenseInput(Input):
     amount: float = Field(gt=0)
     date: date
     note: str = ''
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 class WorkUpdate(Input):
     status: str
     approved: bool = False
@@ -158,6 +265,19 @@ class WorkUpdate(Input):
     due_date: Optional[date] = None
     priority: Optional[Literal['Rendah','Sedang','Tinggi','Mendesak']] = None
     estimate: Optional[float] = Field(default=None, ge=0)
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+class WorkUpdate(Input):
+    status: Literal['Terbuka','Dikerjakan','Selesai']
+    approved: bool = False
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 class DeployInput(Input):
     environment: Literal['Development','Production']
     url: str = Field(pattern=r'^https?://[^\s]+$')

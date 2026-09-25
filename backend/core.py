@@ -14,17 +14,50 @@ def uid(): return str(uuid.uuid4())
 ROLES = ['Admin', 'Admin Project', 'Developer', 'Accounting', 'Client']
 STATUSES = ['Project Masuk', 'Dokumen Disiapkan', 'Scope Dirinci', 'UI/UX', 'Disetujui', 'Development', 'Uploaded to Dev Server', 'Testing', 'Revisi', 'Uploaded to Production', 'Selesai']
 TICKET_STATUSES = ['Baru', 'Ditinjau', 'Menunggu Klarifikasi', 'Diterima', 'Ditolak', 'Menunggu Estimasi Biaya', 'Menunggu Persetujuan', 'Dikerjakan', 'Selesai', 'Ditutup']
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 TASK_STATUSES = ['Belum Mulai', 'Dikerjakan', 'Testing', 'Revisi', 'Selesai']
 SERVER_STAGES = ['Belum Naik', 'Dev Server', 'Production']
 DEFAULT_CLIENT_PASSWORD = '12345678'
 MAINTENANCE_STATUSES = ['Belum dikerjakan', 'Development', 'Testing', 'Selesai']
 WORK_STATUSES = ['Terbuka', 'Dikerjakan', 'Selesai']
 PLATFORMS = ['Web', 'Mobile Android', 'Mobile iOS', 'Desktop', 'UI/UX Design', 'Lainnya']
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+<<<<<<< HEAD
+TASK_STATUSES = ['Belum Mulai', 'Dikerjakan', 'Testing', 'Revisi', 'Selesai']
+SERVER_STAGES = ['Belum Naik', 'Dev Server', 'Production']
+DEFAULT_CLIENT_PASSWORD = '12345678'
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 MANAGERS = ['Admin', 'Admin Project']
 FINANCE = ['Admin', 'Accounting']
 PERMISSIONS = {
     'task.read': ROLES, 'task.write': MANAGERS, 'task.progress': MANAGERS + ['Developer'],
     'costtype.read': FINANCE, 'costtype.write': FINANCE, 'expense.write': FINANCE,
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+MANAGERS = ['Admin', 'Admin Project']
+FINANCE = ['Admin', 'Accounting']
+PERMISSIONS = {
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     'project.read': ROLES, 'project.write': MANAGERS, 'project.status': MANAGERS + ['Developer'],
     'client.read': MANAGERS + ['Accounting'], 'client.write': MANAGERS,
     'user.manage': ['Admin'], 'team.read': MANAGERS,
@@ -37,7 +70,18 @@ PERMISSIONS = {
     'ticket.read': MANAGERS + ['Developer', 'Client'], 'ticket.create': MANAGERS + ['Client'],
     'ticket.triage': MANAGERS, 'ticket.progress': MANAGERS + ['Developer', 'Client'],
     'dashboard.read': ROLES, 'history.read': ROLES,
+<<<<<<< HEAD
     'audit.read': ['Admin'], 'trash.read': MANAGERS, 'trash.write': MANAGERS,
+=======
+<<<<<<< HEAD
+    'audit.read': ['Admin'], 'trash.read': MANAGERS, 'trash.write': MANAGERS,
+=======
+<<<<<<< HEAD
+    'audit.read': ['Admin'], 'trash.read': MANAGERS, 'trash.write': MANAGERS,
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 }
 async def authorize(user, action, resource=None):
     allowed = user['role'] in PERMISSIONS.get(action, [])
@@ -56,10 +100,32 @@ async def project_for(user, project_id, action='project.read'):
     return p
 
 def project_public(p, user):
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     fields = ['id','code','name','description','client_id','client_name','category','platforms','type','status','progress','start_date','due_date','assigned_to','created_at','updated_at','production_at','tickets_closed']
     p = {**p, 'platforms': p.get('platforms') or [p.get('category', 'Web')]}
     if user['role'] in MANAGERS + ['Accounting']: fields += ['value']
     if user['role'] in FINANCE: fields += ['development_cost','server_cost','other_cost']
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+    fields = ['id','code','name','description','client_id','client_name','category','type','status','progress','start_date','due_date','assigned_to','created_at','updated_at','production_at','tickets_closed']
+    if user['role'] in MANAGERS + ['Accounting']: fields += ['value']
+<<<<<<< HEAD
+    if user['role'] in FINANCE: fields += ['development_cost','server_cost','other_cost']
+=======
+    if user['role'] in FINANCE: fields += ['development_cost','server_cost']
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     if user['role'] in MANAGERS + ['Developer']: fields += ['internal_notes']
     return {k: p[k] for k in fields if k in p}
 
@@ -67,6 +133,13 @@ async def log_event(project_id, user, message, **extra):
     doc = {'id': uid(), 'project_id': project_id, 'user_name': user['name'], 'message': message, 'created_at': now(), **extra}
     await db.project_status_logs.insert_one(doc)
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 DEFAULT_TASK_STATUSES = [
     {'id': 'todo', 'name': 'Belum Mulai', 'color': '#87909e', 'kind': 'todo'},
     {'id': 'doing', 'name': 'Dikerjakan', 'color': '#3b82f6', 'kind': 'active'},
@@ -92,6 +165,14 @@ async def trash_item(user, collection, doc, entity_type, name, related=None):
         if r['docs']: await db[r['collection']].delete_many({'id': {'$in': [d['id'] for d in r['docs']]}})
     await log_activity(user, 'hapus', entity_type, doc['id'], name, doc.get('project_id', ''), {'ke_arsip': True})
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 async def validate_assignee(user_id, project=None):
     if not user_id: return
     u = await db.users.find_one({'id': user_id, 'role': 'Developer', 'active': True}, {'_id': 0, 'id': 1})

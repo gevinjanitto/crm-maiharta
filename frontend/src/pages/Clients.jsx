@@ -59,6 +59,16 @@ export default function Clients() {
     e.preventDefault();
     setBusy(true);
     try {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
       const r = editing
         ? await api.patch(`/clients/${editing.id}`, form)
         : await api.post("/clients", form);
@@ -68,6 +78,21 @@ export default function Clients() {
           : "Client berhasil disimpan",
         { duration: 8000 },
       );
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+      editing
+        ? await api.patch(`/clients/${editing.id}`, form)
+        : await api.post("/clients", form);
+      toast.success("Client berhasil disimpan");
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
       setShow(false);
       reload();
     } catch (e) {
@@ -242,12 +267,33 @@ export default function Clients() {
               {formError}
             </p>
           )}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
           {!editing && (
             <p className="hint-text" data-testid="client-account-hint">
               Akun login client dibuat otomatis: username = email, password
               default <b>12345678</b> (wajib diganti saat login pertama).
             </p>
           )}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
           <div className="form-actions">
             <SaveButton busy={busy} />
           </div>

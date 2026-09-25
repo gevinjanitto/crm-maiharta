@@ -1,19 +1,61 @@
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 const TOKEN_KEY = "maiharta_token";
 export const getToken = () => localStorage.getItem(TOKEN_KEY);
 export const setToken = (t) =>
   t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY);
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 export const api = axios.create({
   baseURL: `${process.env.REACT_APP_BACKEND_URL}/api`,
   withCredentials: true,
 });
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 api.interceptors.request.use((config) => {
   const t = getToken();
   if (t) config.headers.Authorization = `Bearer ${t}`;
   return config;
 });
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 export const errorText = (e) => {
   const detail = e.response?.data?.detail;
   return typeof detail === "string"
@@ -96,6 +138,16 @@ export const statuses = [
   "Uploaded to Production",
   "Selesai",
 ];
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 export const taskStatuses = [
   "Belum Mulai",
   "Dikerjakan",
@@ -105,6 +157,17 @@ export const taskStatuses = [
 ];
 export const serverStages = ["Belum Naik", "Dev Server", "Production"];
 export const slug = (s) => String(s).toLowerCase().replace(/\s+/g, "-");
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 export const ticketStatuses = [
   "Baru",
   "Ditinjau",

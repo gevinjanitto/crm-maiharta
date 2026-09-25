@@ -1,3 +1,13 @@
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 # CRM Maiharta
 
 Sistem manajemen project MaiHarta — React (Vercel) + FastAPI (Railway) + MongoDB Atlas + Cloudinary.
@@ -46,3 +56,15 @@ Alternatif SMTP (mis. Gmail App Password): isi `SMTP_HOST`, `SMTP_PORT`, `SMTP_U
 - Sesi login memakai token Bearer (localStorage) + cookie `SameSite=None; Secure`, sehingga aman lintas domain Vercel ↔ Railway.
 - Dokumen project disimpan di Cloudinary (`resource_type=raw`, `type=authenticated`) dan diunduh melalui backend dengan pengecekan role.
 - Data awal (5 akun, 5 client, 8 project) dibuat otomatis saat backend pertama kali berjalan pada database kosong.
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+# Here are your Instructions
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
+>>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
