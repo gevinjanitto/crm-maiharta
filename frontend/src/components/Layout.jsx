@@ -86,18 +86,6 @@ export default function Layout() {
             <small>PROJECT WORKSPACE</small>
           </span>
         </NavLink>
-        <div className="workspace-switch" data-testid="workspace-info">
-          <span className="workspace-icon">
-            <img src="/assets/logo-mark.webp" alt="" />
-          </span>
-          <div>
-            <b>MaiHarta Workspace</b>
-            <small>
-              <span className="live-dot" /> Tim MaiHarta
-            </small>
-          </div>
-          <ChevronDown size={14} />
-        </div>
         <div className="nav-label">WORKSPACE</div>
         <nav>
           {nav
@@ -146,20 +134,20 @@ export default function Layout() {
             <Settings size={18} />
             Pengaturan
           </NavLink>
-          <button
-            className="sidebar-profile"
-            data-testid="logout-button"
-            onClick={logout}
-            title="Keluar"
-          >
-            <span className="avatar">{initials(user.name)}</span>
-            <span className="profile-copy">
-              <b>{user.name}</b>
-              <small>{user.role}</small>
-            </span>
-            <LogOut size={17} />
-          </button>
         </div>
+        <button
+          className="sidebar-profile"
+          data-testid="logout-button"
+          onClick={logout}
+          title="Keluar"
+        >
+          <span className="avatar">{initials(user.name)}</span>
+          <span className="profile-copy">
+            <b>{user.name}</b>
+            <small>{user.role}</small>
+          </span>
+          <LogOut size={17} />
+        </button>
       </aside>
       <div className="main-shell">
         <header className="topbar">
