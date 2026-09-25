@@ -59,10 +59,15 @@ export default function Clients() {
     e.preventDefault();
     setBusy(true);
     try {
-      editing
+      const r = editing
         ? await api.patch(`/clients/${editing.id}`, form)
         : await api.post("/clients", form);
-      toast.success("Client berhasil disimpan");
+      toast.success(
+        r.data.account?.created
+          ? `Client disimpan. Akun login: ${r.data.account.username} / ${r.data.account.password}`
+          : "Client berhasil disimpan",
+        { duration: 8000 },
+      );
       setShow(false);
       reload();
     } catch (e) {
@@ -235,6 +240,12 @@ export default function Clients() {
           {formError && (
             <p className="form-error" data-testid="client-form-error">
               {formError}
+            </p>
+          )}
+          {!editing && (
+            <p className="hint-text" data-testid="client-account-hint">
+              Akun login client dibuat otomatis: username = email, password
+              default <b>12345678</b> (wajib diganti saat login pertama).
             </p>
           )}
           <div className="form-actions">

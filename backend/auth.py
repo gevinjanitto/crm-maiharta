@@ -10,7 +10,7 @@ def hash_password(p): return bcrypt.hashpw(p.encode(), bcrypt.gensalt()).decode(
 def verify_password(p, hashed):
     try: return bcrypt.checkpw(p.encode(), hashed.encode())
     except ValueError: return False
-def public_user(u): return {k: u.get(k) for k in ['id','name','username','email','role','client_id','active']}
+def public_user(u): return {k: u.get(k) for k in ['id','name','username','email','role','client_id','active']} | {'must_change_password': bool(u.get('must_change_password'))}
 
 async def current_user(request: Request):
     bearer = request.headers.get('Authorization', '')
@@ -69,6 +69,6 @@ async def logout(request: Request, response: Response):
 @router.post('/password')
 async def change_password(data: PasswordChange, u=Depends(current_user)):
     if not verify_password(data.current_password,u['password_hash']): raise HTTPException(400,'Password saat ini tidak sesuai.')
-    await db.users.update_one({'id':u['id']},{'$set':{'password_hash':hash_password(data.new_password)}})
+    await db.users.update_one({'id':u['id']},{'$set':{'password_hash':hash_password(data.new_password),'must_change_password':False}})
     await db.sessions.delete_many({'user_id':u['id']})
     return {'message':'Password diubah. Silakan masuk kembali.'}

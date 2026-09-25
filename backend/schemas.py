@@ -71,6 +71,49 @@ class WorkInput(Input):
     assigned_to: str = ''
     due_date: date
     estimate: float = Field(default=0, ge=0)
+    subtasks: list[str] = []
+TaskStatus = Literal['Belum Mulai','Dikerjakan','Testing','Revisi','Selesai']
+ServerStage = Literal['Belum Naik','Dev Server','Production']
+Priority = Literal['Rendah','Sedang','Tinggi','Mendesak']
+class TaskInput(Input):
+    title: str = Field(min_length=2, max_length=200)
+    description: str = ''
+    status: TaskStatus = 'Belum Mulai'
+    server: ServerStage = 'Belum Naik'
+    assigned_to: str = ''
+    due_date: Optional[date] = None
+    priority: Priority = 'Sedang'
+    subtasks: list[str] = []
+class TaskUpdate(Input):
+    title: Optional[str] = Field(default=None, min_length=2, max_length=200)
+    description: Optional[str] = None
+    status: Optional[TaskStatus] = None
+    server: Optional[ServerStage] = None
+    assigned_to: Optional[str] = None
+    due_date: Optional[date] = None
+    priority: Optional[Priority] = None
+class SubtaskInput(Input):
+    title: str = Field(min_length=1, max_length=200)
+    assigned_to: str = ''
+class SubtaskUpdate(Input):
+    title: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    done: Optional[bool] = None
+    assigned_to: Optional[str] = None
+CostGroup = Literal['Development','Server','Lainnya']
+class CostTypeInput(Input):
+    name: str = Field(min_length=2, max_length=100)
+    group: CostGroup = 'Lainnya'
+    description: str = ''
+class CostTypeUpdate(Input):
+    name: Optional[str] = Field(default=None, min_length=2, max_length=100)
+    group: Optional[CostGroup] = None
+    description: Optional[str] = None
+    active: Optional[bool] = None
+class ExpenseInput(Input):
+    cost_type_id: str
+    amount: float = Field(gt=0)
+    date: date
+    note: str = ''
 class WorkUpdate(Input):
     status: Literal['Terbuka','Dikerjakan','Selesai']
     approved: bool = False

@@ -1,6 +1,6 @@
 import csv, io
 from fastapi import APIRouter,Depends,HTTPException,Response
-from core import db,uid,now,authorize,project_scope,project_public,FINANCE,MANAGERS,STATUSES
+from core import db,uid,now,authorize,project_scope,project_public,FINANCE,MANAGERS,STATUSES,DEFAULT_CLIENT_PASSWORD
 from auth import current_user,hash_password,public_user
 from schemas import Record,ClientInput,UserInput,UserUpdate
 
@@ -52,7 +52,12 @@ async def add_client(data:ClientInput,u=Depends(current_user)):
     await authorize(u,'client.write')
     row={**data.model_dump(),'id':uid(),'created_at':now()}
     await db.clients.insert_one(row.copy())
-    return row
+    username=data.email.lower()
+    account={'username':username,'created':False}
+    if not await db.users.find_one({'username':username},{'_id':0,'id':1}):
+        await db.users.insert_one({'id':uid(),'username':username,'name':data.contact,'role':'Client','email':data.email,'client_id':row['id'],'password_hash':hash_password(DEFAULT_CLIENT_PASSWORD),'active':True,'must_change_password':True,'created_at':now()})
+        account.update(created=True,password=DEFAULT_CLIENT_PASSWORD)
+    return {**row,'account':account}
 @router.patch('/clients/{cid}',response_model=Record)
 async def edit_client(cid:str,data:ClientInput,u=Depends(current_user)):
     await authorize(u,'client.write')
@@ -84,8 +89,8 @@ async def dashboard(u=Depends(current_user)):
         result['active_revisions']=await db.revisions.count_documents({'project_id':{'$in':ids},'status':{'$ne':'Selesai'}})
         result['active_maintenance']=await db.maintenances.count_documents({'project_id':{'$in':ids},'status':{'$ne':'Selesai'}})
     if u['role'] in FINANCE:
-        result['finance']={k:sum(p.get(k,0) for p in rows) for k in ['value','development_cost','server_cost']}
-        result['finance']['profit']=result['finance']['value']-result['finance']['development_cost']-result['finance']['server_cost']
+        result['finance']={k:sum(p.get(k,0) for p in rows) for k in ['value','development_cost','server_cost','other_cost']}
+        result['finance']['profit']=result['finance']['value']-result['finance']['development_cost']-result['finance']['server_cost']-result['finance']['other_cost']
     elif u['role']=='Admin Project': result['total_value']=sum(p.get('value',0) for p in rows)
     histories=await db.project_status_logs.find({'project_id':{'$in':ids}},{'_id':0}).sort('created_at',-1).to_list(30)
     names={p['id']:p['name'] for p in rows}

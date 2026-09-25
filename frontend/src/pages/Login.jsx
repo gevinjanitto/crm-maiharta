@@ -84,24 +84,6 @@ export default function Login() {
         my.set(0);
       }}
     >
-      <header className="login-top">
-        <a
-          href="https://www.maiharta.com"
-          target="_blank"
-          rel="noreferrer"
-          data-testid="login-brand-link"
-        >
-          <img
-            src="/assets/logo.webp"
-            alt="MaiHarta"
-            className="brand-logo"
-            data-testid="login-logo"
-          />
-        </a>
-        <span className="login-top-note" data-testid="login-workspace-label">
-          <span className="live-dot" /> Your next great project starts here.
-        </span>
-      </header>
       <main className="login-stage">
         <section className="login-visual">
           <div className="visual-grid" />

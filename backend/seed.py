@@ -3,6 +3,11 @@ from datetime import datetime,timedelta,timezone
 from core import db,now
 from auth import hash_password
 
+async def seed_cost_types():
+    if await db.cost_types.count_documents({}): return
+    for name,group in [('Gaji Developer','Development'),('Freelancer / Outsource','Development'),('Hosting / VPS','Server'),('Domain & SSL','Server'),('Lisensi & Tools','Lainnya'),('Operasional & Transport','Lainnya')]:
+        await db.cost_types.insert_one({'id':'cost-'+name.split()[0].lower(),'name':name,'group':group,'description':'','active':True,'created_at':now()})
+
 async def seed():
     if await db.users.count_documents({}): return
     password=hash_password(os.environ['SEED_PASSWORD'])

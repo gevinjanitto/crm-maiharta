@@ -18,7 +18,8 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
     [team, setTeam] = useState([]),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
-    [form, setForm] = useState({});
+    [form, setForm] = useState({}),
+    [file, setFile] = useState(null);
   const revision = kind === "revisions",
     options = revision
       ? ["In-scope", "Out-of-scope", "Change Request"]
@@ -34,7 +35,9 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
       assigned_to: "",
       due_date: new Date(Date.now() + 604800000).toISOString().slice(0, 10),
       estimate: 0,
+      subtasks: "",
     });
+    setFile(null);
     Promise.all([api.get("/projects"), api.get("/team")])
       .then(([p, t]) => {
         setProjects(
@@ -56,10 +59,22 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
   const save = async (e) => {
     e.preventDefault();
     setBusy(true);
-    const { project_id, ...body } = form;
+    const { project_id, subtasks, ...body } = form;
     try {
-      await api.post(`/projects/${project_id}/work/${kind}`, body);
-      toast.success(`${revision ? "Revisi" : "Maintenance"} ditambahkan`);
+      const r = await api.post(`/projects/${project_id}/work/${kind}`, {
+        ...body,
+        subtasks: (subtasks || "").split("\n").filter((s) => s.trim()),
+      });
+      if (file && r.data.task_id) {
+        const f = new FormData();
+        f.append("file", file);
+        await api
+          .post(`/projects/${project_id}/tasks/${r.data.task_id}/documents`, f)
+          .catch((e) => toast.error(errorText(e)));
+      }
+      toast.success(
+        `${revision ? "Revisi" : "Maintenance"} ditambahkan & masuk ke Kanban`,
+      );
       onSaved();
       onClose();
     } catch (e) {
@@ -143,6 +158,25 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
               as="textarea"
               value={form.description || ""}
               onChange={change}
+            />
+          </div>
+          <div className="form-full">
+            <Field
+              label="Subtask Kanban (satu per baris)"
+              name="subtasks"
+              as="textarea"
+              placeholder={"Perbaiki layout mobile\nUpdate teks halaman"}
+              value={form.subtasks || ""}
+              onChange={change}
+            />
+          </div>
+          <div className="form-full">
+            <Field
+              label="Lampiran dokumen (opsional, maks. 10 MB)"
+              name="work_file"
+              type="file"
+              accept=".pdf,.docx,.xlsx,.txt,.csv,.png,.jpg,.jpeg,.webp"
+              onChange={(e) => setFile(e.target.files[0])}
             />
           </div>
         </div>

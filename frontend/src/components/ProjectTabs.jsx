@@ -1,3 +1,4 @@
+import { ExpensesPanel } from "./Expenses";
 import React, { useState, useEffect } from "react";
 import { Plus, Trash2, Check, Clock, Code2 } from "lucide-react";
 import { toast } from "sonner";
@@ -292,6 +293,7 @@ export const CostsTab = ({ p, user, reloadProject }) => {
           ["Nilai project", data.value],
           ["Biaya development", data.development_cost],
           ["Biaya server", data.server_cost],
+          ["Biaya lainnya", data.other_cost],
           ["Estimasi profit", data.profit],
         ].map(([n, v], i) => (
           <div
@@ -304,9 +306,20 @@ export const CostsTab = ({ p, user, reloadProject }) => {
           </div>
         ))}
       </div>
+      <ExpensesPanel
+        p={p}
+        onChange={() => {
+          reload();
+          reloadProject();
+        }}
+      />
       {user.role === "Admin" && (
-        <form onSubmit={save} style={{ maxWidth: 580 }}>
-          <h2 className="detail-heading">Perbarui biaya internal</h2>
+        <form onSubmit={save} style={{ maxWidth: 580, marginTop: 30 }}>
+          <h2 className="detail-heading">Koreksi manual biaya internal</h2>
+          <p className="form-note" style={{ marginBottom: 12 }}>
+            Nilai ini otomatis terhitung dari pengeluaran di atas; ubah manual
+            hanya jika diperlukan.
+          </p>
           <div className="form-grid">
             <Field
               label="Biaya development (Rp)"

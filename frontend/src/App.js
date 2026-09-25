@@ -1,5 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import { Toaster } from "sonner";
 import { api, setToken } from "./lib/api";
 import Login from "./pages/Login";
@@ -15,6 +21,8 @@ import Users from "./pages/Users";
 import Settings from "./pages/Settings";
 import "./App.css";
 import "./modern.css";
+import "./kanban.css";
+import Kanban from "./pages/Kanban";
 
 const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
@@ -44,6 +52,7 @@ function AuthProvider({ children }) {
 }
 function Protected({ children, roles }) {
   const { user, loading } = useAuth();
+  const location = useLocation();
   if (loading)
     return (
       <div className="app-loading" data-testid="app-loading">
@@ -52,6 +61,8 @@ function Protected({ children, roles }) {
       </div>
     );
   if (!user) return <Navigate to="/login" replace />;
+  if (user.must_change_password && location.pathname !== "/settings")
+    return <Navigate to="/settings" replace />;
   if (roles && !roles.includes(user.role)) return <Navigate to="/" replace />;
   return children;
 }
@@ -72,6 +83,16 @@ export default function App() {
             <Route index element={<Dashboard />} />
             <Route path="projects" element={<Projects />} />
             <Route path="projects/:id" element={<ProjectDetail />} />
+            <Route
+              path="kanban"
+              element={
+                <Protected
+                  roles={["Admin", "Admin Project", "Developer", "Client"]}
+                >
+                  <Kanban />
+                </Protected>
+              }
+            />
             <Route
               path="clients"
               element={

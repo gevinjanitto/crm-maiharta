@@ -96,6 +96,15 @@ export const statuses = [
   "Uploaded to Production",
   "Selesai",
 ];
+export const taskStatuses = [
+  "Belum Mulai",
+  "Dikerjakan",
+  "Testing",
+  "Revisi",
+  "Selesai",
+];
+export const serverStages = ["Belum Naik", "Dev Server", "Production"];
+export const slug = (s) => String(s).toLowerCase().replace(/\s+/g, "-");
 export const ticketStatuses = [
   "Baru",
   "Ditinjau",

@@ -30,6 +30,7 @@ import {
 } from "../components/ProjectTabs";
 import { DocumentsTab, DeploymentsTab } from "../components/DocumentTabs";
 import { ProjectWorkTab } from "../components/WorkComponents";
+import { KanbanTab } from "../components/KanbanTab";
 export default function ProjectDetail() {
   const { id } = useParams(),
     { user } = useAuth(),
@@ -43,6 +44,7 @@ export default function ProjectDetail() {
     internal = ["Admin", "Admin Project", "Developer"].includes(user.role);
   const tabs = [
     "Ringkasan",
+    "Kanban",
     "Fitur",
     "Timeline",
     "Dokumen",
@@ -125,6 +127,7 @@ export default function ProjectDetail() {
       </div>
       <div className="detail-content" key={tab}>
         {tab === "Ringkasan" && <Overview p={p} user={user} reload={reload} />}{" "}
+        {tab === "Kanban" && <KanbanTab p={p} user={user} />}{" "}
         {tab === "Fitur" && (
           <FeaturesTab p={p} user={user} reloadProject={reload} />
         )}{" "}

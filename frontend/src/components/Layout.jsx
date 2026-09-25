@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   FolderKanban,
+  KanbanSquare,
   UsersRound,
   Wallet,
   RotateCcw,
@@ -23,6 +24,12 @@ import { initials } from "../lib/api";
 const nav = [
   ["/", "Dashboard", LayoutDashboard],
   ["/projects", "Semua Project", FolderKanban],
+  [
+    "/kanban",
+    "Kanban",
+    KanbanSquare,
+    ["Admin", "Admin Project", "Developer", "Client"],
+  ],
   ["/clients", "Client", UsersRound, ["Admin", "Admin Project", "Accounting"]],
   ["/finance", "Keuangan", Wallet, ["Admin", "Accounting"]],
   ["/revisions", "Revisi", RotateCcw, ["Admin", "Admin Project", "Developer"]],

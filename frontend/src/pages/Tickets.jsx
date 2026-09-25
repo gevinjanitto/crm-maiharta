@@ -489,6 +489,17 @@ const TicketDetail = ({ id, user, onClose, onSaved }) => {
                   {updateError}
                 </p>
               )}
+              {manager && form.status === "Diterima" && !t.task_id && (
+                <p className="hint-text" data-testid="ticket-kanban-hint">
+                  Saat diterima, tiket otomatis masuk ke Kanban project dan PIC
+                  menerima notifikasi email.
+                </p>
+              )}
+              {t.task_id && (
+                <p className="hint-text" data-testid="ticket-kanban-linked">
+                  Tiket ini sudah terhubung ke task Kanban project.
+                </p>
+              )}
               <div className="form-actions">
                 <SaveButton busy={busy} label="Perbarui tiket" />
               </div>

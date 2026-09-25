@@ -14,9 +14,14 @@ def uid(): return str(uuid.uuid4())
 ROLES = ['Admin', 'Admin Project', 'Developer', 'Accounting', 'Client']
 STATUSES = ['Project Masuk', 'Dokumen Disiapkan', 'Scope Dirinci', 'UI/UX', 'Disetujui', 'Development', 'Uploaded to Dev Server', 'Testing', 'Revisi', 'Uploaded to Production', 'Selesai']
 TICKET_STATUSES = ['Baru', 'Ditinjau', 'Menunggu Klarifikasi', 'Diterima', 'Ditolak', 'Menunggu Estimasi Biaya', 'Menunggu Persetujuan', 'Dikerjakan', 'Selesai', 'Ditutup']
+TASK_STATUSES = ['Belum Mulai', 'Dikerjakan', 'Testing', 'Revisi', 'Selesai']
+SERVER_STAGES = ['Belum Naik', 'Dev Server', 'Production']
+DEFAULT_CLIENT_PASSWORD = '12345678'
 MANAGERS = ['Admin', 'Admin Project']
 FINANCE = ['Admin', 'Accounting']
 PERMISSIONS = {
+    'task.read': ROLES, 'task.write': MANAGERS, 'task.progress': MANAGERS + ['Developer'],
+    'costtype.read': FINANCE, 'costtype.write': FINANCE, 'expense.write': FINANCE,
     'project.read': ROLES, 'project.write': MANAGERS, 'project.status': MANAGERS + ['Developer'],
     'client.read': MANAGERS + ['Accounting'], 'client.write': MANAGERS,
     'user.manage': ['Admin'], 'team.read': MANAGERS,
@@ -49,7 +54,7 @@ async def project_for(user, project_id, action='project.read'):
 def project_public(p, user):
     fields = ['id','code','name','description','client_id','client_name','category','type','status','progress','start_date','due_date','assigned_to','created_at','updated_at','production_at','tickets_closed']
     if user['role'] in MANAGERS + ['Accounting']: fields += ['value']
-    if user['role'] in FINANCE: fields += ['development_cost','server_cost']
+    if user['role'] in FINANCE: fields += ['development_cost','server_cost','other_cost']
     if user['role'] in MANAGERS + ['Developer']: fields += ['internal_notes']
     return {k: p[k] for k in fields if k in p}
 

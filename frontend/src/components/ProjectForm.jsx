@@ -8,7 +8,28 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
     [team, setTeam] = useState([]),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
-  const [form, setForm] = useState({});
+  const [form, setForm] = useState({}),
+    [newClient, setNewClient] = useState(null),
+    [savingClient, setSavingClient] = useState(false);
+  const saveClient = async () => {
+    setSavingClient(true);
+    setError("");
+    try {
+      const r = await api.post("/clients", newClient);
+      setClients([r.data, ...clients]);
+      setForm({ ...form, client_id: r.data.id });
+      setNewClient(null);
+      toast.success(
+        r.data.account?.created
+          ? `Client dibuat. Akun login: ${r.data.account.username} / ${r.data.account.password}`
+          : "Client dibuat",
+      );
+    } catch (e) {
+      setError(errorText(e));
+    } finally {
+      setSavingClient(false);
+    }
+  };
   useEffect(() => {
     if (!open) return;
     setError("");
@@ -92,18 +113,99 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
               required
             />
           </div>
-          <Field
-            label="Client"
-            name="client_id"
-            as="select"
-            options={[
-              { value: "", label: "Pilih client" },
-              ...clients.map((c) => ({ value: c.id, label: c.name })),
-            ]}
-            value={form.client_id || ""}
-            onChange={change}
-            required
-          />
+          <div>
+            <Field
+              label="Client"
+              name="client_id"
+              as="select"
+              options={[
+                { value: "", label: "Pilih client" },
+                ...clients.map((c) => ({ value: c.id, label: c.name })),
+              ]}
+              value={form.client_id || ""}
+              onChange={change}
+              required
+            />
+            {!project && !newClient && (
+              <button
+                type="button"
+                className="link-button"
+                data-testid="new-client-inline"
+                style={{ marginTop: 6 }}
+                onClick={() =>
+                  setNewClient({ name: "", contact: "", email: "", phone: "" })
+                }
+              >
+                + Client belum ada? Tambah di sini
+              </button>
+            )}
+          </div>
+          {newClient && (
+            <div className="form-full inline-client" data-testid="inline-client">
+              <div className="inline-client-head">
+                <span>Client baru (akun login dibuat otomatis)</span>
+                <button
+                  type="button"
+                  className="link-button"
+                  data-testid="cancel-inline-client"
+                  onClick={() => setNewClient(null)}
+                >
+                  Batal
+                </button>
+              </div>
+              <div className="form-grid">
+                <Field
+                  label="Nama client"
+                  name="nc_name"
+                  value={newClient.name}
+                  onChange={(e) =>
+                    setNewClient({ ...newClient, name: e.target.value })
+                  }
+                />
+                <Field
+                  label="Nama kontak"
+                  name="nc_contact"
+                  value={newClient.contact}
+                  onChange={(e) =>
+                    setNewClient({ ...newClient, contact: e.target.value })
+                  }
+                />
+                <Field
+                  label="Email (jadi username)"
+                  name="nc_email"
+                  type="email"
+                  value={newClient.email}
+                  onChange={(e) =>
+                    setNewClient({ ...newClient, email: e.target.value })
+                  }
+                />
+                <Field
+                  label="Telepon"
+                  name="nc_phone"
+                  value={newClient.phone}
+                  onChange={(e) =>
+                    setNewClient({ ...newClient, phone: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-actions">
+                <Button
+                  type="button"
+                  className="secondary-button"
+                  data-testid="save-inline-client"
+                  disabled={
+                    savingClient ||
+                    !newClient.name ||
+                    !newClient.contact ||
+                    !newClient.email
+                  }
+                  onClick={saveClient}
+                >
+                  {savingClient ? "Menyimpan..." : "Simpan client"}
+                </Button>
+              </div>
+            </div>
+          )}
           <Field
             label="Kategori"
             name="category"
