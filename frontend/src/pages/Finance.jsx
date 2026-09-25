@@ -1,18 +1,17 @@
 import React from "react";
 import {
-  Download,
   Wallet,
   Code2,
   Server,
   TrendingUp,
   ArrowUpRight,
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ChartFrame as ResponsiveContainer } from "../components/ChartFrame";
 import { useData, money, compact, download } from "../lib/api";
-import { PageHead, Loading, ErrorState, Badge } from "../components/Common";
-import { Button } from "../components/ui/button";
+import { PageHead, Loading, ErrorState, Badge, ExportButton, CountUp } from "../components/Common";
 import { CostTypesPanel } from "../components/CostTypes";
 export default function Finance() {
   const { data, loading, error, reload } = useData("/projects");
@@ -35,16 +34,15 @@ export default function Finance() {
         title="Keuangan"
         description="Setiap angka, perspektif baru untuk bisnis Anda."
       >
-        <Button
-          data-testid="export-finance"
+        <ExportButton
+          testid="export-finance"
           className="primary-button"
-          onClick={() =>
-            download("/reports/projects.csv", "laporan-keuangan-maiharta.csv")
+          onExport={() =>
+            download("/reports/projects.xlsx", "laporan-keuangan-maiharta.xlsx")
           }
         >
-          <Download size={15} />
           Ekspor laporan
-        </Button>
+        </ExportButton>
       </PageHead>
       <div className="finance-summary">
         {[
@@ -54,17 +52,22 @@ export default function Finance() {
           ["Biaya lainnya", totals.other, Wallet],
           ["Estimasi keuntungan", profit, TrendingUp],
         ].map(([n, v, Icon], i) => (
-          <div
+          <motion.div
             className="finance-card"
             key={n}
             data-testid={`finance-stat-${i}`}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: i * 0.08, ease: "easeOut" }}
           >
             <small>
               <Icon size={15} />
               {n}
             </small>
-            <b>Rp {compact(v)}</b>
-          </div>
+            <b>
+              Rp <CountUp value={v} format={compact} />
+            </b>
+          </motion.div>
         ))}
       </div>
       <CostTypesPanel />
@@ -155,14 +158,20 @@ export default function Finance() {
             </tr>
           </thead>
           <tbody>
-            {data.map((p) => {
+            {data.map((p, i) => {
               const pr =
                 p.value -
                 (p.development_cost || 0) -
                 (p.server_cost || 0) -
                 (p.other_cost || 0);
               return (
-                <tr key={p.id} data-testid={`finance-row-${p.id}`}>
+                <motion.tr
+                  key={p.id}
+                  data-testid={`finance-row-${p.id}`}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: i * 0.04, ease: "easeOut" }}
+                >
                   <td>
                     <Link
                       to={`/projects/${p.id}`}
@@ -183,7 +192,7 @@ export default function Finance() {
                     {money(pr)}
                   </td>
                   <td>{p.value ? Math.round((pr / p.value) * 100) : 0}%</td>
-                </tr>
+                </motion.tr>
               );
             })}
           </tbody>

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Search, Download, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "../App";
 import { useData, download, statuses } from "../lib/api";
-import { PageHead, AddButton, Loading, ErrorState } from "../components/Common";
-import { Button } from "../components/ui/button";
+import { PageHead, AddButton, Loading, ErrorState, ExportButton } from "../components/Common";
 import { ProjectTable } from "../components/ProjectTable";
 import { ProjectForm } from "../components/ProjectForm";
 export default function Projects() {
@@ -38,16 +37,14 @@ export default function Projects() {
         title={user.role === "Client" ? "Project saya" : "Semua project"}
         description={`${data.length} project, berbagai ide hebat. Satu ruang kolaborasi.`}
       >
-        <Button
-          className="secondary-button"
-          data-testid="export-projects"
-          onClick={() =>
-            download("/reports/projects.csv", "laporan-project.csv")
+        <ExportButton
+          testid="export-projects"
+          onExport={() =>
+            download("/reports/projects.xlsx", "laporan-project-maiharta.xlsx")
           }
         >
-          <Download size={15} />
           Ekspor
-        </Button>
+        </ExportButton>
         {["Admin", "Admin Project"].includes(user.role) && (
           <AddButton id="add-project" onClick={() => setShow(true)}>
             Project baru

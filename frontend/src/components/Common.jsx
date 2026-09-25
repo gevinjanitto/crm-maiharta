@@ -1,5 +1,6 @@
 import React from "react";
-import { ArrowUpRight, Inbox, LoaderCircle, Plus, X } from "lucide-react";
+import { ArrowUpRight, Download, Inbox, LoaderCircle, Plus, X } from "lucide-react";
+import { motion, animate } from "framer-motion";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import {
@@ -228,6 +229,54 @@ export const SaveButton = ({ busy, label = "Simpan" }) => (
     {busy ? "Menyimpan..." : label}
   </Button>
 );
+export const ExportButton = ({
+  onExport,
+  children,
+  testid,
+  className = "secondary-button",
+}) => {
+  const [busy, setBusy] = React.useState(false);
+  const run = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await onExport();
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <motion.button
+      type="button"
+      data-testid={testid}
+      className={className}
+      onClick={run}
+      disabled={busy}
+      whileHover={{ scale: busy ? 1 : 1.04, y: busy ? 0 : -1 }}
+      whileTap={{ scale: 0.96 }}
+      transition={{ type: "spring", stiffness: 400, damping: 22 }}
+    >
+      {busy ? (
+        <LoaderCircle className="spin" size={15} />
+      ) : (
+        <Download size={15} />
+      )}
+      {busy ? "Menyiapkan..." : children}
+    </motion.button>
+  );
+};
+export const CountUp = ({ value = 0, format, duration = 1.1 }) => {
+  const [n, setN] = React.useState(0);
+  React.useEffect(() => {
+    const controls = animate(0, value, {
+      duration,
+      ease: "easeOut",
+      onUpdate: (v) => setN(v),
+    });
+    return () => controls.stop();
+  }, [value, duration]);
+  return <>{format ? format(n) : Math.round(n).toLocaleString("id-ID")}</>;
+};
 export const Progress = ({ value, id }) => (
   <div className="progress-wrapper" data-testid={id}>
     <div className="progress-track">

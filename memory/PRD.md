@@ -55,3 +55,12 @@ Lihat `/app/memory/test_credentials.md`.
 - **BLOCKER eksternal:** site key yang diberikan user bukan tipe reCAPTCHA v2 (Google: "Invalid key type"). Butuh pasangan key reCAPTCHA v2 "I'm not a robot" Checkbox yang benar, dan domain preview harus didaftarkan di Google console.
 - Kredensial test: lihat `memory/test_credentials.md`.
 
+
+
+## Iterasi — 25 Sep 2026: Ekspor laporan .xlsx rapi + animasi
+- **Masalah:** ekspor laporan sebelumnya CSV → semua data menumpuk di satu kolom (locale koma vs titik-koma).
+- **Solusi:** endpoint baru `GET /api/reports/projects.xlsx` (openpyxl) menghasilkan Excel rapi — tiap kolom terpisah (Kode, Project, Client, Status, Progress %, Deadline; untuk role finance + Nilai/Biaya Dev/Biaya Server/Profit), header berwarna, judul, format mata uang `"Rp"#,##0`, baris **Total** dgn formula SUM, freeze header, lebar kolom otomatis. Endpoint CSV lama tetap ada (dipakai test regresi).
+- **Frontend:** tombol Ekspor di `Projects.jsx` & `Finance.jsx` kini unduh `.xlsx`. Komponen baru `ExportButton` (state loading + micro-interaction framer-motion) dan `CountUp` (angka finance menghitung naik). Animasi masuk bertahap (stagger) pada kartu ringkasan finance dan baris tabel project/finance.
+- **Verifikasi:** file .xlsx dibuka & divalidasi (kolom terpisah, format, total SUM benar). Frontend compile OK. Screenshot halaman ber-animasi tidak bisa diambil otomatis karena gerbang reCAPTCHA + quirk harness; tidak memengaruhi user asli.
+- Dependency baru: `openpyxl==3.1.5`.
+

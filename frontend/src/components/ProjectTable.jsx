@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
   ArrowUpRight,
@@ -31,7 +32,13 @@ export const ProjectTable = ({ projects, compact = false }) => (
           {projects.map((p, i) => {
             const Icon = icons[i % 4];
             return (
-              <tr key={p.id} data-testid={`project-row-${p.id}`}>
+              <motion.tr
+                key={p.id}
+                data-testid={`project-row-${p.id}`}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: i * 0.05, ease: "easeOut" }}
+              >
                 <td>
                   <Link
                     to={`/projects/${p.id}`}
@@ -79,7 +86,7 @@ export const ProjectTable = ({ projects, compact = false }) => (
                     <ArrowUpRight size={15} />
                   </Link>
                 </td>
-              </tr>
+              </motion.tr>
             );
           })}
         </tbody>

@@ -1,5 +1,9 @@
 import csv, io
+from datetime import datetime, timezone
 from fastapi import APIRouter,Depends,HTTPException,Response
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.utils import get_column_letter
 from core import db,uid,now,authorize,project_scope,project_public,log_activity,FINANCE,MANAGERS,STATUSES,DEFAULT_CLIENT_PASSWORD
 from auth import current_user,hash_password,public_user
 from schemas import Record,ClientInput,UserInput,UserUpdate
@@ -118,3 +122,83 @@ async def report(u=Depends(current_user)):
         if u['role'] in FINANCE: values += [p['value'],p.get('development_cost',0),p.get('server_cost',0),p['value']-p.get('development_cost',0)-p.get('server_cost',0)]
         writer.writerow([safe(v) for v in values])
     return Response('\ufeff'+stream.getvalue(),media_type='text/csv; charset=utf-8',headers={'Content-Disposition':'attachment; filename=laporan-project-maiharta.csv'})
+
+@router.get('/reports/projects.xlsx')
+async def report_xlsx(u=Depends(current_user)):
+    await authorize(u,'project.read')
+    rows=await db.projects.find(project_scope(u),{'_id':0}).sort('code',1).to_list(2000)
+    is_finance=u['role'] in FINANCE
+    headers=['Kode','Project','Client','Status','Progress','Deadline']
+    if is_finance: headers+=['Nilai Project','Biaya Development','Biaya Server','Profit']
+    ncols=len(headers); last=get_column_letter(ncols)
+    NAVY='1E3A5F'; BLUE='2F5FE0'; LIGHT='EEF3FF'; BAND='F7F9FE'; LINE='D9E1F2'
+    thin=Side(style='thin', color=LINE)
+    border=Border(left=thin,right=thin,top=thin,bottom=thin)
+    money_fmt='"Rp"#,##0'
+    wb=Workbook(); ws=wb.active; ws.title='Laporan Project'
+    # Title band
+    ws.merge_cells(f'A1:{last}1')
+    c=ws['A1']; c.value='Laporan Project — CRM Maiharta'
+    c.font=Font(name='Calibri',size=16,bold=True,color='FFFFFF')
+    c.fill=PatternFill('solid',fgColor=NAVY)
+    c.alignment=Alignment(horizontal='left',vertical='center',indent=1)
+    ws.row_dimensions[1].height=34
+    ws.merge_cells(f'A2:{last}2')
+    s=ws['A2']
+    s.value=f"Dibuat {datetime.now(timezone.utc).strftime('%d %b %Y')}  ·  {len(rows)} project"
+    s.font=Font(name='Calibri',size=10,italic=True,color='FFFFFF')
+    s.fill=PatternFill('solid',fgColor=BLUE)
+    s.alignment=Alignment(horizontal='left',vertical='center',indent=1)
+    ws.row_dimensions[2].height=20
+    # Header row
+    hr=4
+    for i,h in enumerate(headers, start=1):
+        cell=ws.cell(row=hr,column=i,value=h)
+        cell.font=Font(bold=True,color='FFFFFF',size=11)
+        cell.fill=PatternFill('solid',fgColor=BLUE)
+        cell.alignment=Alignment(horizontal='center',vertical='center',wrap_text=True)
+        cell.border=border
+    ws.row_dimensions[hr].height=26
+    # Data rows
+    r=hr+1
+    for idx,p in enumerate(rows):
+        prof=p['value']-p.get('development_cost',0)-p.get('server_cost',0)
+        vals=[p['code'],p['name'],p['client_name'],p['status'],(p.get('progress',0) or 0)/100,p['due_date']]
+        if is_finance: vals+=[p['value'],p.get('development_cost',0),p.get('server_cost',0),prof]
+        for ci,v in enumerate(vals, start=1):
+            cell=ws.cell(row=r,column=ci,value=v)
+            cell.border=border
+            cell.alignment=Alignment(vertical='center',horizontal='center' if ci in (1,4,5,6) else 'left')
+            if idx%2: cell.fill=PatternFill('solid',fgColor=BAND)
+        pc=ws.cell(row=r,column=5); pc.number_format='0%'; pc.alignment=Alignment(horizontal='center',vertical='center')
+        if is_finance:
+            for ci in range(7,ncols+1):
+                mc=ws.cell(row=r,column=ci); mc.number_format=money_fmt
+                mc.alignment=Alignment(horizontal='right',vertical='center')
+        r+=1
+    # Totals
+    if is_finance and rows:
+        tr=r
+        lc=ws.cell(row=tr,column=6,value='Total'); lc.font=Font(bold=True)
+        lc.alignment=Alignment(horizontal='right',vertical='center')
+        for ci in range(1,7):
+            ws.cell(row=tr,column=ci).fill=PatternFill('solid',fgColor=LIGHT)
+            ws.cell(row=tr,column=ci).border=border
+        for ci in range(7,ncols+1):
+            col=get_column_letter(ci)
+            tc=ws.cell(row=tr,column=ci,value=f'=SUM({col}{hr+1}:{col}{r-1})')
+            tc.number_format=money_fmt; tc.font=Font(bold=True,color=NAVY)
+            tc.fill=PatternFill('solid',fgColor=LIGHT); tc.border=border
+            tc.alignment=Alignment(horizontal='right',vertical='center')
+        ws.row_dimensions[tr].height=22
+    # Widths + view
+    widths=[12,32,24,22,11,14]
+    if is_finance: widths+=[16,18,15,16]
+    for ci,w in enumerate(widths, start=1):
+        ws.column_dimensions[get_column_letter(ci)].width=w
+    ws.freeze_panes=f'A{hr+1}'
+    ws.sheet_view.showGridLines=False
+    buf=io.BytesIO(); wb.save(buf); buf.seek(0)
+    return Response(buf.getvalue(),
+        media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        headers={'Content-Disposition':'attachment; filename=laporan-project-maiharta.xlsx'})
