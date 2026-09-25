@@ -1,0 +1,36 @@
+{
+  "summary": "Iteration 5 (reCAPTCHA + Platforms + Maintenance + Trash + Audit) tested end-to-end. Backend: 13/13 pytest cases in /app/backend/tests/test_iteration5_features.py pass, plus smoke2.py flow passes cleanly (recaptcha endpoint returns provider=recaptcha with site_key; invalid recaptcha_token -> 400; project platforms accepted & category derived; empty platforms -> 422; all projects have platforms field; multipart lampiran upload+download; maintenance created with default status 'Belum dikerjakan' and mirrored task with matching priority; started_date on create -> status 'Development'; PATCH statuses Development/Testing/Selesai sync task to Dikerjakan/Testing/Selesai; invalid status 'Terbuka' -> 400; reverse sync: task->Selesai flips maintenance to Selesai; trash flow moves task/fitur/maintenance/revisi/dokumen/project; restoring child while parent project archived -> 400; adminproject can view /trash but purge DELETE /trash/{id} returns 403; audit is admin-only, filter ?entity_type=task works). Frontend: /login shows reCAPTCHA widget (iframe present) with login-submit disabled (invalid key error visible - expected). Using localStorage 'maiharta_token': adminproject sidebar shows nav-trash and NO nav-audit; admin shows both. Project form modal exposes platform-web, platform-mobile-android, platform-mobile-ios, platform-desktop, platform-ui-ux-design, platform-lainnya (Web pre-checked), field-project_files, legend '* wajib diisi', 4x '(opsional)' labels. project-file-list only renders when files chosen (conditional - correct). /maintenance page has 5 status tabs, work-project-filter, add-work, work-priority-*, work-dates-*, edit-work-*, delete-work-* on cards; add-work modal shows Prioritas, Tanggal masuk, Tanggal dikerjakan, Target selesai, Estimasi biaya. /trash (adminproject) shows trash-table, 7 trash-filter-* buttons, restore-* buttons, NO purge-* buttons. /audit as adminproject returns no audit-table (blocked). /audit as admin shows audit-table + audit-search + audit-filter-task. /trash as admin shows 5 purge-* buttons. Regression: /projects/project-1 -> detail-tab-kanban -> renders 5 default columns, board intact.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Login", "issues": ["reCAPTCHA renders error 'ERROR untuk pemilik situs: Jenis kunci tidak valid' because the configured REACT_APP_RECAPTCHA_SITE_KEY (6LfEr84tAAAAAPFrb2g5URFHb4otfZXhhUTmG0pI) is an invalid v2 key type - expected: login remains untestable through UI. Backend correctly rejects with 400 via check_captcha. Non-blocking for this iteration per problem statement."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration5_features.py",
+    "/app/test_reports/pytest/iter5_results.xml",
+    "/app/tests/smoke2.py"
+  ],
+  "action_items": [
+    "(Optional) Replace REACT_APP_RECAPTCHA_SITE_KEY with a valid reCAPTCHA v2 checkbox site key so UI login flow can be exercised end-to-end.",
+    "(Optional) ProjectForm pre-selects platforms=['Web'] on new project - users can still unselect to trigger 'Pilih minimal satu platform.' path (validated). If intent is to force explicit selection, change initial state to [] but keep required.",
+    "(Minor) In ProjectForm.jsx, native HTML5 required attributes fire before JS validation - the JS 'Pilih minimal satu platform.' message is only reachable when all other required fields are filled first, which is expected but worth documenting."
+  ],
+  "critical_code_review_comments": [
+    "auth.py check_captcha: invalid recaptcha returns 400 with generic message 'Verifikasi CAPTCHA gagal atau sudah kedaluwarsa.' - consider distinguishing 'invalid site key' from 'expired token' in server logs for easier debugging.",
+    "projects.py maintenance PATCH: schema Literal enum for status good; consider adding pydantic validator that treats null started_date + status Development as auto-fill started_date (currently must be sent explicitly by client on transition).",
+    "audit.py GET /audit: pagination via limit/skip is OK but response doesn't include total count - frontend has to know when to stop paging.",
+    "ProjectForm.jsx: default platforms=['Web'] means the 'Pilih minimal satu platform.' validation is only reachable if user deliberately unchecks all - consider starting empty for consistency with 'wajib min 1' semantics."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration5_features.py"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "admin/adminproject/developer/accounting/client password MaiHarta!642a8bda; UI login untestable (invalid reCAPTCHA site key). Use python3 /app/tests/make_token.py <username> for JWT + localStorage.setItem('maiharta_token', token).",
+  "seed_data_creation": "test_iteration5 pytest creates TEST_iter5_platform project + docs + several TEST_iter5_maint_* maintenances; all cleaned up in-suite. One accidental TEST_form_validation project created during UI probe was purged permanently via admin token. No seed projects 1-8 modified.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend regression: pytest /app/backend/tests/test_iteration5_features.py (13 tests, ~2.5s). Login via reCAPTCHA unusable in this env (invalid site key type); use /app/tests/make_token.py + localStorage 'maiharta_token'. ProjectForm defaults platforms=['Web']; to test empty-platform UI error, click platform-web chip to uncheck before submitting. /trash purge-* only rendered for admin role; adminproject sees restore-* only. Audit page requires admin. Kanban tab regression on /projects/project-1 unchanged."
+}

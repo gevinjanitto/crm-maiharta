@@ -1,0 +1,131 @@
+{
+  "app_name": "CRM Maiharta - Sistem Manajemen Project",
+  "theme_strategy": {
+    "primary_archetype": "THE PERFORMANCE PRO / HIGH CONTRAST DARK BLUE",
+    "theme": "Dark Mode Default with Light Mode Toggle",
+    "emotional_tone": "Professional, High-tech, Trustworthy, Modern Indonesian Enterprise",
+    "colors": {
+      "background": "#090d16",
+      "surface_card": "#111827",
+      "surface_card_hover": "#1f293d",
+      "border": "#1e293b",
+      "border_accent": "#2563eb",
+      "primary": "#2563eb",
+      "primary_hover": "#1d4ed8",
+      "primary_light": "#3b82f6",
+      "accent_blue": "#60a5fa",
+      "accent_cyan": "#06b6d4",
+      "text_primary": "#f8fafc",
+      "text_secondary": "#94a3b8",
+      "text_muted": "#64748b",
+      "success": "#10b981",
+      "warning": "#f59e0b",
+      "danger": "#ef4444",
+      "info": "#3b82f6"
+    }
+  },
+  "typography": {
+    "headline_font": "Plus Jakarta Sans, sans-serif",
+    "body_font": "Plus Jakarta Sans, sans-serif",
+    "code_mono_font": "JetBrains Mono, monospace",
+    "scale": {
+      "h1": "text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight",
+      "h2": "text-2xl sm:text-3xl font-bold tracking-tight",
+      "h3": "text-xl sm:text-2xl font-semibold",
+      "h4": "text-lg font-semibold",
+      "body": "text-sm sm:text-base leading-relaxed",
+      "small": "text-xs font-medium text-slate-400"
+    }
+  },
+  "brand_assets": {
+    "logo_url": "https://customer-assets-0z36b82j.emergentagent.net/job_a569c79f-3e76-4b65-bc63-c7a71ea52780/artifacts/zwmgzkt8_LOGO-blue-04.webp",
+    "barong_3d_asset_url": "https://customer-assets-0z36b82j.emergentagent.net/job_a569c79f-3e76-4b65-bc63-c7a71ea52780/artifacts/uo8q7l12_barong.webp",
+    "login_reference_url": "https://customer-assets-0z36b82j.emergentagent.net/job_a569c79f-3e76-4b65-bc63-c7a71ea52780/artifacts/0vkkuxvg_login%20%282%29.jpg"
+  },
+  "login_page_design": {
+    "layout": "Two-column split layout or immersive hero frame based on login (2).jpg reference",
+    "interactive_barong": "Interactive 3D-feeling Barong image component with mouse movement tracking (parallax tilt/rotate effect on mousemove)",
+    "captcha_integration": "Dynamic Math / Visual Captcha verification before sign in submission",
+    "role_selector_and_credentials": "Quick demo login switcher buttons for test roles (Admin, Admin Project, Developer, Accounting, Client)",
+    "styling": "Matching dark blue dashboard aesthetic, glow borders, glassmorphic card container"
+  },
+  "footer_requirements": {
+    "text": "Design dan develop by ",
+    "link_text": "MaiHarta",
+    "link_url": "https://www.maiharta.com",
+    "styling": "Persistent dashboard footer, muted text with blue accent link on hover, centered or bottom right aligned"
+  },
+  "role_permissions_matrix": {
+    "Admin": {
+      "access": "Full System Access (User Management, Financials, All Projects, System Audit, Settings, Ticket Escalation)",
+      "sees_costs_profit": true
+    },
+    "Admin Project": {
+      "access": "Project Lifecycle Management, Workflow Assignment, Milestones, Client Approval, Revisions, Tickets",
+      "sees_costs_profit": true
+    },
+    "Developer": {
+      "access": "Assigned Projects Only, Task Status, Technical Documents, Code/Deployment Repos, Revisions (In-Scope)",
+      "sees_costs_profit": false
+    },
+    "Accounting": {
+      "access": "Financial Overview, Invoices, Payment Status, Project Budget vs Actual Cost, Client Invoicing",
+      "sees_costs_profit": true
+    },
+    "Client": {
+      "access": "Client Portal, Project Progress Tracker, Document Download, Revision Submissions, Client Ticket Management",
+      "sees_costs_profit": false
+    }
+  },
+  "project_workflow_statuses": [
+    "Inquiry",
+    "Requirements Gathering",
+    "Quotation & Proposal",
+    "Down Payment",
+    "Design & Prototype",
+    "Development",
+    "Testing & QA",
+    "Client Review",
+    "Final Payment",
+    "Production Deployment",
+    "Maintenance"
+  ],
+  "ticket_statuses": [
+    "Submitted",
+    "Under Triage",
+    "Assigned",
+    "In Progress",
+    "Pending Client Info",
+    "In Review",
+    "Approved for Release",
+    "Resolved",
+    "Closed",
+    "Escalated"
+  ],
+  "image_urls": [
+    {
+      "category": "user_avatars",
+      "url": "https://images.pexels.com/photos/20752570/pexels-photo-20752570.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Indonesian Female Executive / Project Manager Avatar"
+    },
+    {
+      "category": "user_avatars",
+      "url": "https://images.pexels.com/photos/9304669/pexels-photo-9304669.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Young Tech Specialist / Developer Avatar"
+    }
+  ],
+  "instructions_to_main_agent": {
+    "language": "Bahasa Indonesia (All labels, menus, tooltips, status badges, notifications must be in polite Indonesian business tone)",
+    "file_type_awareness": "Note: Project uses JavaScript (.js / .jsx) components",
+    "data_testids": "All buttons, inputs, tabs, selects, table rows, and links MUST have data-testid attributes (e.g. data-testid=\"login-submit-btn\", data-testid=\"project-status-select\")",
+    "animations": "Use Framer Motion or CSS transitions for mouse parallax on Barong, soft tab transitions, KPI hover lifts, glowing blue borders",
+    "security_rule": "Never show internal project cost, profit margin, developer rate, or internal notes to Client role."
+  },
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "Avoid default Vercel white/black templates; strictly apply the rich deep navy & vibrant blue design system",
+    "Use 2-3x generous internal padding (p-6, p-8) for card containers to prevent collisions",
+    "Do NOT use transparent backgrounds for dropdowns, popovers, or sticky headers (always use backdrop-blur with bg-slate-900/90 or similar)",
+    "All interactive elements MUST have data-testid attributes for testing",
+    "Use sonner for user feedback toasts (toast.success, toast.error)"
+  ]
+}
