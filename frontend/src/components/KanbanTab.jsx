@@ -3,22 +3,8 @@ import { api, useData } from "../lib/api";
 import { Loading, ErrorState } from "./Common";
 import { KanbanBoard } from "./KanbanBoard";
 export const KanbanTab = ({ p, user }) => {
-<<<<<<< HEAD
   const tasks = useData(`/projects/${p.id}/tasks`),
     statuses = useData(`/projects/${p.id}/statuses`),
-=======
-<<<<<<< HEAD
-  const tasks = useData(`/projects/${p.id}/tasks`),
-    statuses = useData(`/projects/${p.id}/statuses`),
-=======
-<<<<<<< HEAD
-  const tasks = useData(`/projects/${p.id}/tasks`),
-    statuses = useData(`/projects/${p.id}/statuses`),
-=======
-  const { data, loading, error, reload } = useData(`/projects/${p.id}/tasks`),
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     [team, setTeam] = useState([]);
   useEffect(() => {
     if (["Admin", "Admin Project"].includes(user.role))
@@ -27,13 +13,6 @@ export const KanbanTab = ({ p, user }) => {
         .then((r) => setTeam(r.data.filter((d) => p.assigned_to.includes(d.id))))
         .catch(() => {});
   }, [user.role, p]);
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
   if (tasks.loading || statuses.loading) return <Loading />;
   if (tasks.error || statuses.error)
     return (
@@ -56,33 +35,5 @@ export const KanbanTab = ({ p, user }) => {
       team={team}
       reload={tasks.reload}
     />
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-=======
-  if (loading) return <Loading />;
-  if (error) return <ErrorState error={error} reload={reload} />;
-  return (
-    <>
-      <div className="section-heading">
-        <div>
-          <h2>Kanban project</h2>
-          <p>
-            {data.length} task · geser kartu antar kolom untuk mengubah status
-          </p>
-        </div>
-      </div>
-      <KanbanBoard
-        tasks={data}
-        user={user}
-        reload={reload}
-        teamFor={() => team}
-        projectId={p.id}
-      />
-    </>
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
   );
 };

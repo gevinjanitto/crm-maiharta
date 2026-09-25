@@ -1,40 +1,8 @@
 # Managed by Emergent webhook-cron (pod-local syscron). DO NOT EDIT.
 SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-<<<<<<< HEAD
-JOB_ID=a40c3dfd-9b64-4d55-9774-dbdf8d445cfe
-WEBHOOK_ENV_FILE=/app/backend/.env
-CRON_API_URL=https://ea.int.apis.emergentagent.com
-
-* * * * * root JOB_ID=a40c3dfd-9b64-4d55-9774-dbdf8d445cfe CRON_API_URL=https://ea.int.apis.emergentagent.com /bin/sh /app/.emergent/cron/watch_crons.sh >> /var/log/webhook-cron.log 2>&1
-=======
-<<<<<<< HEAD
 JOB_ID=fd628aba-a782-42ff-9553-7606c7250a4b
 WEBHOOK_ENV_FILE=/app/backend/.env
 CRON_API_URL=https://ea.int.apis.emergentagent.com
 
 * * * * * root JOB_ID=fd628aba-a782-42ff-9553-7606c7250a4b CRON_API_URL=https://ea.int.apis.emergentagent.com /bin/sh /app/.emergent/cron/watch_crons.sh >> /var/log/webhook-cron.log 2>&1
-=======
-<<<<<<< HEAD
-JOB_ID=72fab029-df78-4fe3-ba4e-74fbeed6a0c0
-WEBHOOK_ENV_FILE=/app/backend/.env
-CRON_API_URL=https://ea.int.apis.emergentagent.com
-
-* * * * * root JOB_ID=72fab029-df78-4fe3-ba4e-74fbeed6a0c0 CRON_API_URL=https://ea.int.apis.emergentagent.com /bin/sh /app/.emergent/cron/watch_crons.sh >> /var/log/webhook-cron.log 2>&1
-=======
-<<<<<<< HEAD
-JOB_ID=cd23d324-c9cc-4497-8cd1-73aa171ef15d
-WEBHOOK_ENV_FILE=/app/backend/.env
-CRON_API_URL=https://ea.int.apis.emergentagent.com
-
-* * * * * root JOB_ID=cd23d324-c9cc-4497-8cd1-73aa171ef15d CRON_API_URL=https://ea.int.apis.emergentagent.com /bin/sh /app/.emergent/cron/watch_crons.sh >> /var/log/webhook-cron.log 2>&1
-=======
-JOB_ID=a569c79f-3e76-4b65-bc63-c7a71ea52780
-WEBHOOK_ENV_FILE=/app/backend/.env
-CRON_API_URL=https://ea.int.apis.emergentagent.com
-
-* * * * * root JOB_ID=a569c79f-3e76-4b65-bc63-c7a71ea52780 CRON_API_URL=https://ea.int.apis.emergentagent.com /bin/sh /app/.emergent/cron/watch_crons.sh >> /var/log/webhook-cron.log 2>&1
->>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394

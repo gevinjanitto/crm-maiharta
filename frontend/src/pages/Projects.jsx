@@ -1,23 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "../App";
 import { useData, download, statuses } from "../lib/api";
 import { PageHead, AddButton, Loading, ErrorState, ExportButton } from "../components/Common";
-<<<<<<< HEAD
-=======
-=======
-import { Search, Download, ChevronLeft, ChevronRight } from "lucide-react";
-import { useAuth } from "../App";
-import { useData, download, statuses } from "../lib/api";
-import { PageHead, AddButton, Loading, ErrorState } from "../components/Common";
-import { Button } from "../components/ui/button";
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 import { ProjectTable } from "../components/ProjectTable";
 import { ProjectForm } from "../components/ProjectForm";
 export default function Projects() {
@@ -51,10 +37,6 @@ export default function Projects() {
         title={user.role === "Client" ? "Project saya" : "Semua project"}
         description={`${data.length} project, berbagai ide hebat. Satu ruang kolaborasi.`}
       >
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
         <ExportButton
           testid="export-projects"
           onExport={() =>
@@ -63,21 +45,6 @@ export default function Projects() {
         >
           Ekspor
         </ExportButton>
-<<<<<<< HEAD
-=======
-=======
-        <Button
-          className="secondary-button"
-          data-testid="export-projects"
-          onClick={() =>
-            download("/reports/projects.csv", "laporan-project.csv")
-          }
-        >
-          <Download size={15} />
-          Ekspor
-        </Button>
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
         {["Admin", "Admin Project"].includes(user.role) && (
           <AddButton id="add-project" onClick={() => setShow(true)}>
             Project baru

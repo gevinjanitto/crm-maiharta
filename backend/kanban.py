@@ -1,66 +1,24 @@
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 from datetime import datetime, timezone, timedelta
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from core import db, uid, now, authorize, project_scope, project_for, validate_assignee, project_statuses, recalc_progress, log_activity, trash_item, MANAGERS
 from auth import current_user
 from schemas import Record, TaskInput, TaskUpdate, SubtaskInput, SubtaskUpdate, StatusColumnInput, StatusColumnUpdate, ReorderInput, TaskCommentInput, TimeEntryInput, BulkTaskInput
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-=======
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
-from core import db, uid, now, authorize, project_scope, project_for, validate_assignee, MANAGERS
-from auth import current_user
-from schemas import Record, TaskInput, TaskUpdate, SubtaskInput, SubtaskUpdate
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 from documents import store_document
 from mailer import notify_assignment
 
 router = APIRouter()
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 def kind_of(p, status): return next((s['kind'] for s in project_statuses(p) if s['name'] == status), 'active')
 def status_names(p): return [s['name'] for s in project_statuses(p)]
 def fallback_status(p, kind='todo'): return next((s['name'] for s in project_statuses(p) if s['kind'] == kind), status_names(p)[0])
 def secs(e): return e.get('seconds') or 0
 
 async def enrich(tasks, user=None):
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-=======
-async def enrich(tasks):
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     ids = {t.get('assigned_to') for t in tasks} | {s.get('assigned_to') for t in tasks for s in t.get('subtasks', [])}
     users = await db.users.find({'id': {'$in': [i for i in ids if i]}}, {'_id': 0, 'id': 1, 'name': 1}).to_list(500)
     names = {r['id']: r['name'] for r in users}
     projects = await db.projects.find({'id': {'$in': list({t['project_id'] for t in tasks})}}, {'_id': 0, 'id': 1, 'name': 1}).to_list(2000)
     pnames = {p['id']: p['name'] for p in projects}
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     tids = [t['id'] for t in tasks]
     counts, comments = {}, {}
     async for d in db.project_documents.aggregate([{'$match': {'task_id': {'$in': tids}, 'is_deleted': False}}, {'$group': {'_id': '$task_id', 'n': {'$sum': 1}}}]): counts[d['_id']] = d['n']
@@ -82,37 +40,12 @@ async def create_task(pid, u, title, description='', status='Belum Mulai', serve
     order = (await db.tasks.count_documents({'project_id': pid})) + 1
     t = {'id': uid(), 'project_id': pid, 'title': title, 'description': description, 'status': status, 'server': server, 'assigned_to': assigned_to or '', 'due_date': due_date, 'start_date': start_date, 'priority': priority, 'source': source, 'source_id': source_id,
          'tags': tags or [], 'estimate_hours': estimate_hours or 0, 'order': order, 'time_entries': [],
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-=======
-    counts = {}
-    async for d in db.project_documents.aggregate([{'$match': {'task_id': {'$in': [t['id'] for t in tasks]}, 'is_deleted': False}}, {'$group': {'_id': '$task_id', 'n': {'$sum': 1}}}]): counts[d['_id']] = d['n']
-    for t in tasks:
-        t['assigned_name'] = names.get(t.get('assigned_to'), '')
-        for s in t.get('subtasks', []): s['assigned_name'] = names.get(s.get('assigned_to'), '')
-        t['project_name'] = pnames.get(t['project_id'], ''); t['document_count'] = counts.get(t['id'], 0)
-    return tasks
-
-async def create_task(pid, u, title, description='', status='Belum Mulai', server='Belum Naik', assigned_to='', due_date=None, priority='Sedang', source='manual', source_id='', subtasks=None):
-    t = {'id': uid(), 'project_id': pid, 'title': title, 'description': description, 'status': status, 'server': server, 'assigned_to': assigned_to or '', 'due_date': due_date, 'priority': priority, 'source': source, 'source_id': source_id,
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
          'subtasks': [{'id': uid(), 'title': s.strip(), 'done': False, 'assigned_to': ''} for s in (subtasks or []) if s.strip()], 'created_at': now(), 'updated_at': now(), 'created_by': u['id']}
     await db.tasks.insert_one(t.copy())
     if assigned_to: await notify_assignment(assigned_to, 'task Kanban', title, pid, due_date)
     return t
 
 async def sync_task_status(source, source_id, status):
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     t = await db.tasks.find_one({'source': source, 'source_id': source_id}, {'_id': 0, 'project_id': 1})
     if not t: return
     p = await db.projects.find_one({'id': t['project_id']}, {'_id': 0}) or {}
@@ -134,22 +67,6 @@ async def sync_source(t, status, p):
         s = {'done': 'Selesai', 'active': 'Dikerjakan', 'todo': 'Belum dimulai'}[kind]
         await db.project_features.update_one({'id': sid}, {'$set': {'status': s}})
         await recalc_progress(t['project_id'])
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-=======
-    await db.tasks.update_many({'source': source, 'source_id': source_id}, {'$set': {'status': status, 'updated_at': now()}})
-
-async def sync_source(t, status):
-    if status not in ['Dikerjakan', 'Selesai']: return
-    if t['source'] in ['revision', 'maintenance']:
-        await db['revisions' if t['source'] == 'revision' else 'maintenances'].update_one({'id': t['source_id']}, {'$set': {'status': status, 'completed_at': now() if status == 'Selesai' else None}})
-    if t['source'] == 'ticket':
-        await db.tickets.update_one({'id': t['source_id'], 'status': {'$in': ['Diterima', 'Dikerjakan']}}, {'$set': {'status': status, 'updated_at': now()}})
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 
 def can_edit(u, t):
     if u['role'] in MANAGERS or (u['role'] == 'Developer' and (t.get('assigned_to') or '') in ['', u['id']]): return
@@ -161,13 +78,6 @@ async def task_for(u, pid, tid, action='task.read'):
     if not t: raise HTTPException(404, 'Task tidak ditemukan.')
     return p, t
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 async def one(tid, u):
     t = await db.tasks.find_one({'id': tid}, {'_id': 0})
     return (await enrich([t], u))[0]
@@ -222,42 +132,15 @@ async def reorder_statuses(pid: str, data: ReorderInput, u=Depends(current_user)
     return await save_statuses(pid, ordered)
 
 # ---------- tasks ----------
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-=======
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 @router.get('/tasks', response_model=list[Record])
 async def all_tasks(u=Depends(current_user)):
     await authorize(u, 'task.read')
     pids = await db.projects.distinct('id', project_scope(u))
-<<<<<<< HEAD
     return await enrich(await db.tasks.find({'project_id': {'$in': pids}}, {'_id': 0}).sort('order', 1).to_list(5000), u)
-=======
-<<<<<<< HEAD
-    return await enrich(await db.tasks.find({'project_id': {'$in': pids}}, {'_id': 0}).sort('order', 1).to_list(5000), u)
-=======
-<<<<<<< HEAD
-    return await enrich(await db.tasks.find({'project_id': {'$in': pids}}, {'_id': 0}).sort('order', 1).to_list(5000), u)
-=======
-    return await enrich(await db.tasks.find({'project_id': {'$in': pids}}, {'_id': 0}).sort('created_at', -1).to_list(5000))
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 
 @router.get('/projects/{pid}/tasks', response_model=list[Record])
 async def project_tasks(pid: str, u=Depends(current_user)):
     await project_for(u, pid, 'task.read')
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     return await enrich(await db.tasks.find({'project_id': pid}, {'_id': 0}).sort('order', 1).to_list(2000), u)
 
 @router.get('/projects/{pid}/tasks/stats')
@@ -281,28 +164,12 @@ async def task_stats(pid: str, u=Depends(current_user)):
         'by_assignee': sorted(by_assignee.values(), key=lambda a: -a['total']),
         'by_source': [{'name': s, 'count': sum(t.get('source') == s for t in tasks)} for s in ['manual', 'feature', 'revision', 'maintenance', 'ticket']],
     }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-=======
-    return await enrich(await db.tasks.find({'project_id': pid}, {'_id': 0}).sort('created_at', -1).to_list(2000))
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 
 @router.post('/projects/{pid}/tasks', response_model=Record)
 async def add_task(pid: str, data: TaskInput, u=Depends(current_user)):
     p = await project_for(u, pid, 'task.write')
     await validate_assignee(data.assigned_to, p)
     t = await create_task(pid, u, **data.model_dump(mode='json'))
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     await log_activity(u, 'buat', 'task', t['id'], t['title'], pid)
     return (await enrich([t], u))[0]
 
@@ -323,26 +190,10 @@ async def bulk_tasks(pid: str, data: BulkTaskInput, u=Depends(current_user)):
     if 'status' in update:
         async for t in db.tasks.find(q, {'_id': 0}): await sync_source(t, update['status'], p)
     return {'message': f'{len(data.ids)} task diperbarui.'}
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-=======
-    return (await enrich([t]))[0]
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 
 @router.patch('/projects/{pid}/tasks/{tid}', response_model=Record)
 async def edit_task(pid: str, tid: str, data: TaskUpdate, u=Depends(current_user)):
     p, t = await task_for(u, pid, tid, 'task.progress'); can_edit(u, t)
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     update = data.model_dump(mode='json', exclude_unset=True)
     for k in ['title', 'status', 'server', 'priority', 'tags', 'order', 'estimate_hours', 'description', 'assigned_to']:
         if k in update and update[k] is None: update.pop(k)
@@ -367,30 +218,6 @@ async def delete_task(pid: str, tid: str, u=Depends(current_user)):
     return {'message': 'Task dipindahkan ke arsip.'}
 
 # ---------- subtasks ----------
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-=======
-    update = data.model_dump(mode='json', exclude_none=True)
-    if u['role'] == 'Developer' and set(update) - {'status', 'server'}: raise HTTPException(403, 'Developer hanya dapat memperbarui status dan server.')
-    if 'assigned_to' in update: await validate_assignee(update['assigned_to'], p)
-    update['updated_at'] = now()
-    await db.tasks.update_one({'id': tid}, {'$set': update})
-    if update.get('assigned_to') and update['assigned_to'] != t.get('assigned_to'): await notify_assignment(update['assigned_to'], 'task Kanban', update.get('title', t['title']), pid, update.get('due_date', t.get('due_date')))
-    if 'status' in update and update['status'] != t['status']: await sync_source(t, update['status'])
-    return (await enrich([{**t, **update}]))[0]
-
-@router.delete('/projects/{pid}/tasks/{tid}')
-async def delete_task(pid: str, tid: str, u=Depends(current_user)):
-    await task_for(u, pid, tid, 'task.write')
-    await db.tasks.delete_one({'id': tid})
-    await db.project_documents.update_many({'task_id': tid}, {'$set': {'is_deleted': True}})
-    return {'message': 'Task dihapus.'}
-
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 @router.post('/projects/{pid}/tasks/{tid}/subtasks', response_model=Record)
 async def add_subtask(pid: str, tid: str, data: SubtaskInput, u=Depends(current_user)):
     p, t = await task_for(u, pid, tid, 'task.progress'); can_edit(u, t)
@@ -398,19 +225,7 @@ async def add_subtask(pid: str, tid: str, data: SubtaskInput, u=Depends(current_
     s = {**data.model_dump(), 'id': uid(), 'done': False}
     await db.tasks.update_one({'id': tid}, {'$push': {'subtasks': s}, '$set': {'updated_at': now()}})
     if data.assigned_to: await notify_assignment(data.assigned_to, 'subtask', f"{data.title} ({t['title']})", pid, t.get('due_date'))
-<<<<<<< HEAD
     return await one(tid, u)
-=======
-<<<<<<< HEAD
-    return await one(tid, u)
-=======
-<<<<<<< HEAD
-    return await one(tid, u)
-=======
-    return (await enrich([{**t, 'subtasks': t.get('subtasks', []) + [s]}]))[0]
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 
 @router.patch('/projects/{pid}/tasks/{tid}/subtasks/{sid}', response_model=Record)
 async def edit_subtask(pid: str, tid: str, sid: str, data: SubtaskUpdate, u=Depends(current_user)):
@@ -422,19 +237,7 @@ async def edit_subtask(pid: str, tid: str, sid: str, data: SubtaskUpdate, u=Depe
     if update.get('assigned_to') and update['assigned_to'] != s.get('assigned_to'): await notify_assignment(update['assigned_to'], 'subtask', f"{s['title']} ({t['title']})", pid, t.get('due_date'))
     s.update(update)
     await db.tasks.update_one({'id': tid}, {'$set': {'subtasks': subs, 'updated_at': now()}})
-<<<<<<< HEAD
     return await one(tid, u)
-=======
-<<<<<<< HEAD
-    return await one(tid, u)
-=======
-<<<<<<< HEAD
-    return await one(tid, u)
-=======
-    return (await enrich([{**t, 'subtasks': subs}]))[0]
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 
 @router.delete('/projects/{pid}/tasks/{tid}/subtasks/{sid}')
 async def delete_subtask(pid: str, tid: str, sid: str, u=Depends(current_user)):
@@ -442,13 +245,6 @@ async def delete_subtask(pid: str, tid: str, sid: str, u=Depends(current_user)):
     await db.tasks.update_one({'id': tid}, {'$pull': {'subtasks': {'id': sid}}, '$set': {'updated_at': now()}})
     return {'message': 'Subtask dihapus.'}
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 # ---------- comments ----------
 @router.get('/projects/{pid}/tasks/{tid}/comments', response_model=list[Record])
 async def task_comments(pid: str, tid: str, u=Depends(current_user)):
@@ -505,14 +301,6 @@ async def delete_time(pid: str, tid: str, eid: str, u=Depends(current_user)):
     return await one(tid, u)
 
 # ---------- documents ----------
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-=======
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 @router.get('/projects/{pid}/tasks/{tid}/documents', response_model=list[Record])
 async def task_documents(pid: str, tid: str, u=Depends(current_user)):
     await task_for(u, pid, tid)

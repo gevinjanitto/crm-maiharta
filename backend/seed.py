@@ -3,32 +3,11 @@ from datetime import datetime,timedelta,timezone
 from core import db,now
 from auth import hash_password
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 async def seed_cost_types():
     if await db.cost_types.count_documents({}): return
     for name,group in [('Gaji Developer','Development'),('Freelancer / Outsource','Development'),('Hosting / VPS','Server'),('Domain & SSL','Server'),('Lisensi & Tools','Lainnya'),('Operasional & Transport','Lainnya')]:
         await db.cost_types.insert_one({'id':'cost-'+name.split()[0].lower(),'name':name,'group':group,'description':'','active':True,'created_at':now()})
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-=======
->>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 async def seed():
     if await db.users.count_documents({}): return
     password=hash_password(os.environ['SEED_PASSWORD'])
@@ -52,13 +31,6 @@ async def seed():
         p=await db.projects.find_one({'id':pid},{'_id':0})
         await db.tickets.insert_one({'id':f'ticket-{i}','code':f'TKT-{i:04d}','project_id':pid,'project_name':p['name'],'title':title,'description':title+'. Mohon ditinjau oleh tim MaiHarta. Terima kasih.','category':cat,'priority':priority,'status':status,'assigned_to':'user-developer' if status=='Dikerjakan' else '', 'triaged':status!='Baru','approved':False,'estimate':0,'created_by':'user-client','created_by_name':'Ayu Pratiwi','created_at':(base-timedelta(hours=i*3)).isoformat(),'updated_at':now()})
     await db.revisions.insert_one({'id':'revision-1','project_id':'project-8','title':'Penyesuaian layout halaman agenda','description':'Sesuaikan jarak antar sesi pada versi mobile.','kind':'In-scope','assigned_to':'user-developer','due_date':(base+timedelta(days=3)).date().isoformat(),'estimate':0,'status':'Dikerjakan','approved':True,'created_at':now(),'completed_at':None})
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     await db.maintenances.insert_one({'id':'maintenance-1','project_id':'project-4','title':'Pembaruan dependensi & optimasi performa','description':'Pemeriksaan berkala platform booking.','kind':'Corrective','assigned_to':'user-developer','due_date':(base+timedelta(days=7)).date().isoformat(),'estimate':0,'status':'Terbuka','approved':False,'created_at':now(),'completed_at':None})
 async def backfill_tasks():
     from kanban import create_task
@@ -89,12 +61,3 @@ async def migrate():
         c = p.get('category', '')
         plat = ['Mobile Android', 'Mobile iOS'] if 'Mobile' in c else ['UI/UX Design'] if 'UI/UX' in c else ['Web']
         await db.projects.update_one({'id': p['id']}, {'$set': {'platforms': plat}})
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-=======
-    await db.maintenances.insert_one({'id':'maintenance-1','project_id':'project-4','title':'Pembaruan dependensi & optimasi performa','description':'Pemeriksaan berkala platform booking.','kind':'Corrective','assigned_to':'user-developer','due_date':(base+timedelta(days=7)).date().isoformat(),'estimate':0,'status':'Terbuka','approved':False,'created_at':now(),'completed_at':None})
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394

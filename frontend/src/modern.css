@@ -29,19 +29,7 @@ body {
   margin: 0;
 }
 .sidebar-brand .brand-text b {
-<<<<<<< HEAD
   font-size: 17px;
-=======
-<<<<<<< HEAD
-  font-size: 17px;
-=======
-<<<<<<< HEAD
-  font-size: 17px;
-=======
-  font-size: 15px;
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
   font-weight: 600;
   color: var(--text);
   letter-spacing: -0.01em !important;
@@ -52,19 +40,7 @@ body {
   color: var(--blue);
 }
 .sidebar-brand .brand-text small {
-<<<<<<< HEAD
   font-size: 10.5px;
-=======
-<<<<<<< HEAD
-  font-size: 10.5px;
-=======
-<<<<<<< HEAD
-  font-size: 10.5px;
-=======
-  font-size: 8px;
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
   color: var(--muted-text);
   font-weight: 600;
 }
@@ -245,19 +221,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.04em !important;
   text-transform: uppercase;
-<<<<<<< HEAD
   font-size: 11px;
-=======
-<<<<<<< HEAD
-  font-size: 11px;
-=======
-<<<<<<< HEAD
-  font-size: 11px;
-=======
-  font-size: 8.5px;
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
 }
 .data-table tbody tr:hover {
   background: #f6f8fd;
@@ -448,36 +412,12 @@ body {
   position: static;
 }
 .visual-bottom {
-<<<<<<< HEAD
   font-size: 11.5px;
-=======
-<<<<<<< HEAD
-  font-size: 11.5px;
-=======
-<<<<<<< HEAD
-  font-size: 11.5px;
-=======
-  font-size: 9px;
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
   font-weight: 500;
   letter-spacing: 0.02em !important;
 }
 .panel-bottom {
-<<<<<<< HEAD
   font-size: 12.5px;
-=======
-<<<<<<< HEAD
-  font-size: 12.5px;
-=======
-<<<<<<< HEAD
-  font-size: 12.5px;
-=======
-  font-size: 9.5px;
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
   justify-content: flex-end;
 }
 .panel-bottom a {
@@ -504,27 +444,11 @@ body {
     height: 32px;
   }
   .sidebar-brand .brand-text b {
-<<<<<<< HEAD
     font-size: 17px;
-=======
-<<<<<<< HEAD
-    font-size: 17px;
-=======
-<<<<<<< HEAD
-    font-size: 17px;
-=======
-    font-size: 13px;
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
   }
 }
 @media (max-width: 700px) {
   .panel-bottom {
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
     font-size: 10.5px;
   }
 }
@@ -608,15 +532,3 @@ body {
 .subtask-add-btn:hover:not(:disabled) { background: #e8f0fe; border-color: #b9d0fb; }
 .subtask-add-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-<<<<<<< HEAD
-=======
-=======
-<<<<<<< HEAD
-    font-size: 10.5px;
-=======
-    font-size: 8px;
->>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
-  }
-}
->>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
->>>>>>> 63e7822993e2ec00966458cc5e7e1c3fc8f01394
