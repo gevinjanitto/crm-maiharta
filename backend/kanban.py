@@ -113,7 +113,8 @@ async def delete_status(pid: str, sid: str, move_to: str = '', u=Depends(current
     if not c: raise HTTPException(404, 'Status tidak ditemukan.')
     rest = [x for x in cols if x['id'] != sid]
     if not rest: raise HTTPException(400, 'Minimal harus ada satu status.')
-    target = move_to if move_to in [x['name'] for x in rest] else rest[0]['name']
+    if move_to and move_to not in [x['name'] for x in rest]: raise HTTPException(400, 'Status tujuan tidak ditemukan.')
+    target = move_to or rest[0]['name']
     await db.tasks.update_many({'project_id': pid, 'status': c['name']}, {'$set': {'status': target}})
     return await save_statuses(pid, rest)
 

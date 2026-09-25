@@ -404,7 +404,7 @@ export const TaskDetail = ({ task, project, user, team, statuses, onClose, onCha
           <section className="ck-side-block">
             <h4>Time tracking</h4>
             <div className="ck-timer" data-testid="task-timer">
-              <b>{fmtDuration((task.time_total || 0) + running)}</b>
+              <b data-testid="task-timer-value">{fmtDuration((task.time_total || 0) + running)}</b>{" "}
               {tracker && (
                 <button
                   className={`ck-timer-btn ${task.running_entry ? "stop" : ""}`}
