@@ -16,7 +16,6 @@ import {
   Search,
   Menu,
   ChevronDown,
-  ArrowUpRight,
   X,
 } from "lucide-react";
 import { useAuth } from "../App";
@@ -147,15 +146,6 @@ export default function Layout() {
             <Settings size={18} />
             Pengaturan
           </NavLink>
-          <div className="sidebar-note" data-testid="sidebar-brand-note">
-            <span>MAKE GOOD THINGS HAPPEN.</span>
-            <p>
-              Bersama, melangkah
-              <br />
-              lebih jauh.
-            </p>
-            <ArrowUpRight size={22} />
-          </div>
           <button
             className="sidebar-profile"
             data-testid="logout-button"

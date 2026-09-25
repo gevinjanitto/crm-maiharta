@@ -252,6 +252,12 @@ export const ExportButton = ({
       className={className}
       onClick={run}
       disabled={busy}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 8,
+      }}
       whileHover={{ scale: busy ? 1 : 1.04, y: busy ? 0 : -1 }}
       whileTap={{ scale: 0.96 }}
       transition={{ type: "spring", stiffness: 400, damping: 22 }}

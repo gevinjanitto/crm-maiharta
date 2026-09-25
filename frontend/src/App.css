@@ -15,6 +15,24 @@
   display: flex;
   flex-direction: column;
   z-index: 30;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  min-height: 0;
+}
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: #ffffff1f;
+  border-radius: 6px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #ffffff33;
+}
+.sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: #ffffff1f transparent;
 }
 .sidebar-brand {
   display: flex;
