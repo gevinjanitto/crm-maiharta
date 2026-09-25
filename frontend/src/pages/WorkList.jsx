@@ -9,21 +9,30 @@ export default function WorkList({ kind }) {
     { data, loading, error, reload } = useData(`/work/${kind}`),
     [show, setShow] = useState(false),
     [search, setSearch] = useState(""),
+<<<<<<< HEAD
     [project, setProject] = useState(""),
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
     [filter, setFilter] = useState("Semua");
   if (loading) return <Loading />;
   if (error) return <ErrorState error={error} reload={reload} />;
   const revision = kind === "revisions",
+<<<<<<< HEAD
     statusTabs = revision
       ? ["Semua", "Terbuka", "Dikerjakan", "Selesai"]
       : ["Semua", "Belum dikerjakan", "Development", "Testing", "Selesai"],
     projects = [...new Map(data.map((r) => [r.project_id, r.project_name])).entries()],
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
     rows = data.filter(
       (r) =>
         (r.title + " " + r.project_name)
           .toLowerCase()
           .includes(search.toLowerCase()) &&
+<<<<<<< HEAD
         (!project || r.project_id === project) &&
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
         (filter === "Semua" || r.status === filter),
     );
   return (
@@ -68,7 +77,11 @@ export default function WorkList({ kind }) {
       </div>
       <div className="list-toolbar">
         <div className="filter-tabs">
+<<<<<<< HEAD
           {statusTabs.map((t) => (
+=======
+          {["Semua", "Terbuka", "Dikerjakan", "Selesai"].map((t) => (
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
             <button
               key={t}
               data-testid={`work-filter-${t}`}
@@ -79,6 +92,7 @@ export default function WorkList({ kind }) {
             </button>
           ))}
         </div>
+<<<<<<< HEAD
         <select
           className="filter-select"
           data-testid="work-project-filter"
@@ -92,6 +106,8 @@ export default function WorkList({ kind }) {
             </option>
           ))}
         </select>
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
         <div className="list-search">
           <Search size={15} />
           <input

@@ -97,6 +97,7 @@ export const Field = ({
   name,
   as = "input",
   options = [],
+<<<<<<< HEAD
   hint,
   ...props
 }) => (
@@ -112,6 +113,12 @@ export const Field = ({
         <small className="opt-mark">(opsional)</small>
       )}
     </span>
+=======
+  ...props
+}) => (
+  <label className="form-field">
+    <span>{label}</span>
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
     {as === "select" ? (
       <select data-testid={`field-${name}`} name={name} {...props}>
         {options.map((o) => (

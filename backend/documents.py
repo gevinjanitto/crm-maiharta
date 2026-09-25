@@ -1,10 +1,17 @@
 import asyncio, logging
 from pathlib import Path
 from fastapi import HTTPException
+<<<<<<< HEAD
 from core import db, uid, now, log_activity
 from storage import put_object
 
 DOC_TYPES = ['Kontrak','Requirement','Rincian Fitur','Timeline','UI/UX Design','Penawaran Harga','Invoice','Akses Server','BAST','Dokumentasi Penggunaan','Lampiran Project','Lampiran Task']
+=======
+from core import db, uid, now
+from storage import put_object
+
+DOC_TYPES = ['Kontrak','Requirement','Rincian Fitur','Timeline','UI/UX Design','Penawaran Harga','Invoice','Akses Server','BAST','Dokumentasi Penggunaan','Lampiran Task']
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
 ALLOWED_EXT = ['.pdf','.docx','.xlsx','.txt','.csv','.png','.jpg','.jpeg','.webp']
 
 async def store_document(pid, u, file, kind, visibility='Internal', task_id=None):
@@ -22,6 +29,9 @@ async def store_document(pid, u, file, kind, visibility='Internal', task_id=None
     doc={'id':doc_id,'project_id':pid,'name':Path(file.filename).name,'kind':kind,'visibility':visibility,'size':len(data),'storage_path':result['path'],'content_type':file.content_type or 'application/octet-stream','created_at':now(),'uploaded_by':u['name'],'is_deleted':False}
     if task_id: doc['task_id']=task_id
     await db.project_documents.insert_one(doc.copy())
+<<<<<<< HEAD
     await log_activity(u, 'unggah', 'dokumen', doc_id, doc['name'], pid, {'kategori': kind})
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
     doc.pop('storage_path')
     return doc

@@ -1,9 +1,20 @@
 from fastapi import APIRouter,Depends,HTTPException
+<<<<<<< HEAD
 from core import db,uid,now,authorize,project_scope,project_for,validate_assignee,log_activity,TICKET_STATUSES,MANAGERS
 from auth import current_user
 from schemas import Record,TicketInput,TicketUpdate,CommentInput
 from kanban import create_task,sync_task_status
 from mailer import notify_assignment
+=======
+from core import db,uid,now,authorize,project_scope,project_for,validate_assignee,TICKET_STATUSES,MANAGERS
+from auth import current_user
+from schemas import Record,TicketInput,TicketUpdate,CommentInput
+<<<<<<< HEAD
+from kanban import create_task,sync_task_status
+from mailer import notify_assignment
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
 router=APIRouter()
 async def visible_tickets(u):
     ids=await db.projects.distinct('id',project_scope(u))
@@ -29,10 +40,14 @@ async def create_ticket(data:TicketInput,u=Depends(current_user)):
     p=await project_for(u,data.project_id)
     if p.get('tickets_closed'): raise HTTPException(400,'Penerimaan tiket untuk project ini sudah ditutup.')
     t={**data.model_dump(),'id':uid(),'code':'TKT-'+uid()[:6].upper(),'project_name':p['name'],'status':'Baru','assigned_to':'','estimate':0,'triaged':False,'approved':False,'created_by':u['id'],'created_by_name':u['name'],'created_at':now(),'updated_at':now()}
+<<<<<<< HEAD
     task=await create_task(t['project_id'],u,title=f"[{t['code']}] {t['title']}",description=t['description'],priority=t['priority'],source='ticket',source_id=t['id'],tags=['Tiket',t['category']])
     t['task_id']=task['id']
     await db.tickets.insert_one(t.copy())
     await log_activity(u,'buat','tiket',t['id'],t['title'],t['project_id'])
+=======
+    await db.tickets.insert_one(t.copy())
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
     return t
 @router.get('/tickets/{tid}',response_model=Record)
 async def get_ticket(tid:str,u=Depends(current_user)): return ticket_public(await ticket_for(u,tid,'ticket.read'),u)
@@ -63,6 +78,10 @@ async def update_ticket(tid:str,data:TicketUpdate,u=Depends(current_user)):
         if data.status in ['Diterima','Dikerjakan','Selesai'] and not update.get('approved',t.get('approved')): raise HTTPException(400,'Estimasi harus disetujui sebelum pekerjaan dimulai.')
     if data.status=='Dikerjakan' and not update.get('assigned_to',t.get('assigned_to')): raise HTTPException(400,'Tentukan developer sebelum pekerjaan dimulai.')
     update['updated_at']=now()
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
     assignee=update.get('assigned_to',t.get('assigned_to',''))
     new_assignee=bool(assignee) and assignee!=t.get('assigned_to','')
     if data.status=='Diterima' and not t.get('task_id'):
@@ -72,10 +91,16 @@ async def update_ticket(tid:str,data:TicketUpdate,u=Depends(current_user)):
         await db.tasks.update_many({'source':'ticket','source_id':tid},{'$set':{'assigned_to':assignee,'updated_at':now()}})
         await notify_assignment(assignee,'tiket',t['title'],t['project_id'])
     if data.status in ['Dikerjakan','Selesai'] and data.status!=t['status']: await sync_task_status('ticket',tid,data.status)
+<<<<<<< HEAD
     if data.status=='Ditutup' and data.status!=t['status']: await sync_task_status('ticket',tid,'Selesai')
     if data.status=='Ditolak' and data.status!=t['status']: await db.tasks.delete_many({'source':'ticket','source_id':tid})
     await db.tickets.update_one({'id':tid},{'$set':update})
     await log_activity(u,'ubah status','tiket',tid,t['title'],t['project_id'],{'dari':t['status'],'ke':data.status})
+=======
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+    await db.tickets.update_one({'id':tid},{'$set':update})
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
     await db.ticket_comments.insert_one({'id':uid(),'ticket_id':tid,'message':f"Status diperbarui: {data.status}",'internal':False,'author_name':u['name'],'author_role':u['role'],'created_at':now(),'system':True})
     return ticket_public({**t,**update},u)
 

@@ -59,6 +59,10 @@ export default function Clients() {
     e.preventDefault();
     setBusy(true);
     try {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
       const r = editing
         ? await api.patch(`/clients/${editing.id}`, form)
         : await api.post("/clients", form);
@@ -68,6 +72,15 @@ export default function Clients() {
           : "Client berhasil disimpan",
         { duration: 8000 },
       );
+<<<<<<< HEAD
+=======
+=======
+      editing
+        ? await api.patch(`/clients/${editing.id}`, form)
+        : await api.post("/clients", form);
+      toast.success("Client berhasil disimpan");
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
       setShow(false);
       reload();
     } catch (e) {
@@ -242,12 +255,21 @@ export default function Clients() {
               {formError}
             </p>
           )}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
           {!editing && (
             <p className="hint-text" data-testid="client-account-hint">
               Akun login client dibuat otomatis: username = email, password
               default <b>12345678</b> (wajib diganti saat login pertama).
             </p>
           )}
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
           <div className="form-actions">
             <SaveButton busy={busy} />
           </div>

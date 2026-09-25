@@ -29,7 +29,11 @@ body {
   margin: 0;
 }
 .sidebar-brand .brand-text b {
+<<<<<<< HEAD
   font-size: 17px;
+=======
+  font-size: 15px;
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
   font-weight: 600;
   color: var(--text);
   letter-spacing: -0.01em !important;
@@ -40,7 +44,11 @@ body {
   color: var(--blue);
 }
 .sidebar-brand .brand-text small {
+<<<<<<< HEAD
   font-size: 10.5px;
+=======
+  font-size: 8px;
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
   color: var(--muted-text);
   font-weight: 600;
 }
@@ -221,7 +229,11 @@ body {
   font-weight: 600;
   letter-spacing: 0.04em !important;
   text-transform: uppercase;
+<<<<<<< HEAD
   font-size: 11px;
+=======
+  font-size: 8.5px;
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
 }
 .data-table tbody tr:hover {
   background: #f6f8fd;
@@ -412,12 +424,20 @@ body {
   position: static;
 }
 .visual-bottom {
+<<<<<<< HEAD
   font-size: 11.5px;
+=======
+  font-size: 9px;
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
   font-weight: 500;
   letter-spacing: 0.02em !important;
 }
 .panel-bottom {
+<<<<<<< HEAD
   font-size: 12.5px;
+=======
+  font-size: 9.5px;
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
   justify-content: flex-end;
 }
 .panel-bottom a {
@@ -444,11 +464,19 @@ body {
     height: 32px;
   }
   .sidebar-brand .brand-text b {
+<<<<<<< HEAD
     font-size: 17px;
+=======
+    font-size: 13px;
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
   }
 }
 @media (max-width: 700px) {
   .panel-bottom {
+<<<<<<< HEAD
     font-size: 10.5px;
+=======
+    font-size: 8px;
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
   }
 }

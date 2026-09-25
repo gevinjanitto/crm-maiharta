@@ -13,7 +13,14 @@ import { ChartFrame as ResponsiveContainer } from "../components/ChartFrame";
 import { useData, money, compact, download } from "../lib/api";
 import { PageHead, Loading, ErrorState, Badge } from "../components/Common";
 import { Button } from "../components/ui/button";
+<<<<<<< HEAD
 import { CostTypesPanel } from "../components/CostTypes";
+=======
+<<<<<<< HEAD
+import { CostTypesPanel } from "../components/CostTypes";
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
 export default function Finance() {
   const { data, loading, error, reload } = useData("/projects");
   if (loading) return <Loading />;
@@ -23,11 +30,24 @@ export default function Finance() {
         value: a.value + p.value,
         development: a.development + (p.development_cost || 0),
         server: a.server + (p.server_cost || 0),
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
         other: a.other + (p.other_cost || 0),
       }),
       { value: 0, development: 0, server: 0, other: 0 },
     ),
     profit = totals.value - totals.development - totals.server - totals.other;
+<<<<<<< HEAD
+=======
+=======
+      }),
+      { value: 0, development: 0, server: 0 },
+    ),
+    profit = totals.value - totals.development - totals.server;
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
   return (
     <>
       <PageHead
@@ -51,7 +71,14 @@ export default function Finance() {
           ["Total nilai project", totals.value, Wallet],
           ["Biaya development", totals.development, Code2],
           ["Biaya server", totals.server, Server],
+<<<<<<< HEAD
           ["Biaya lainnya", totals.other, Wallet],
+=======
+<<<<<<< HEAD
+          ["Biaya lainnya", totals.other, Wallet],
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
           ["Estimasi keuntungan", profit, TrendingUp],
         ].map(([n, v, Icon], i) => (
           <div
@@ -67,7 +94,14 @@ export default function Finance() {
           </div>
         ))}
       </div>
+<<<<<<< HEAD
       <CostTypesPanel />
+=======
+<<<<<<< HEAD
+      <CostTypesPanel />
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
       <div className="panel panel-padding" style={{ marginBottom: 27 }}>
         <div className="section-heading">
           <h2>Nilai & profit per project</h2>
@@ -89,10 +123,20 @@ export default function Finance() {
                 name: p.code,
                 nilai: p.value / 1e6,
                 profit:
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
                   (p.value -
                     (p.development_cost || 0) -
                     (p.server_cost || 0) -
                     (p.other_cost || 0)) /
+<<<<<<< HEAD
+=======
+=======
+                  (p.value - (p.development_cost || 0) - (p.server_cost || 0)) /
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
                   1e6,
               }))}
               barGap={6}
@@ -149,7 +193,14 @@ export default function Finance() {
               <th>Nilai project</th>
               <th>Development</th>
               <th>Server</th>
+<<<<<<< HEAD
               <th>Lainnya</th>
+=======
+<<<<<<< HEAD
+              <th>Lainnya</th>
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
               <th>Profit</th>
               <th>Margin</th>
             </tr>
@@ -157,10 +208,20 @@ export default function Finance() {
           <tbody>
             {data.map((p) => {
               const pr =
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
                 p.value -
                 (p.development_cost || 0) -
                 (p.server_cost || 0) -
                 (p.other_cost || 0);
+<<<<<<< HEAD
+=======
+=======
+                p.value - (p.development_cost || 0) - (p.server_cost || 0);
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
               return (
                 <tr key={p.id} data-testid={`finance-row-${p.id}`}>
                   <td>
@@ -178,7 +239,14 @@ export default function Finance() {
                   <td>{money(p.value)}</td>
                   <td>{money(p.development_cost)}</td>
                   <td>{money(p.server_cost)}</td>
+<<<<<<< HEAD
                   <td>{money(p.other_cost)}</td>
+=======
+<<<<<<< HEAD
+                  <td>{money(p.other_cost)}</td>
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
                   <td style={{ color: pr >= 0 ? "#6dc4a2" : "#e48491" }}>
                     {money(pr)}
                   </td>

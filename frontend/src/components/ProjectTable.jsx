@@ -44,7 +44,11 @@ export const ProjectTable = ({ projects, compact = false }) => (
                     <div>
                       <b>{p.name}</b>
                       <small>
+<<<<<<< HEAD
                         {p.code} · {(p.platforms || [p.category]).join(", ")}
+=======
+                        {p.code} · {p.category}
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
                       </small>
                     </div>
                   </Link>
