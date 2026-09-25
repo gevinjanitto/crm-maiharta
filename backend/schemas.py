@@ -71,6 +71,7 @@ class WorkInput(Input):
     assigned_to: str = ''
     due_date: date
     estimate: float = Field(default=0, ge=0)
+<<<<<<< HEAD
     subtasks: list[str] = []
 TaskStatus = Literal['Belum Mulai','Dikerjakan','Testing','Revisi','Selesai']
 ServerStage = Literal['Belum Naik','Dev Server','Production']
@@ -114,6 +115,8 @@ class ExpenseInput(Input):
     amount: float = Field(gt=0)
     date: date
     note: str = ''
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
 class WorkUpdate(Input):
     status: Literal['Terbuka','Dikerjakan','Selesai']
     approved: bool = False

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+<<<<<<< HEAD
 import {
   BrowserRouter,
   Routes,
@@ -8,6 +9,11 @@ import {
 } from "react-router-dom";
 import { Toaster } from "sonner";
 import { api, setToken } from "./lib/api";
+=======
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "sonner";
+import { api } from "./lib/api";
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
 import Login from "./pages/Login";
 import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
@@ -20,9 +26,12 @@ import WorkList from "./pages/WorkList";
 import Users from "./pages/Users";
 import Settings from "./pages/Settings";
 import "./App.css";
+<<<<<<< HEAD
 import "./modern.css";
 import "./kanban.css";
 import Kanban from "./pages/Kanban";
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
 
 const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
@@ -37,12 +46,17 @@ function AuthProvider({ children }) {
       .finally(() => setLoading(false));
   }, []);
   const logout = async () => {
+<<<<<<< HEAD
     try {
       await api.post("/auth/logout");
     } finally {
       setToken(null);
       setUser(null);
     }
+=======
+    await api.post("/auth/logout");
+    setUser(null);
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
   };
   return (
     <AuthContext.Provider value={{ user, setUser, logout, loading }}>
@@ -52,7 +66,10 @@ function AuthProvider({ children }) {
 }
 function Protected({ children, roles }) {
   const { user, loading } = useAuth();
+<<<<<<< HEAD
   const location = useLocation();
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
   if (loading)
     return (
       <div className="app-loading" data-testid="app-loading">
@@ -61,8 +78,11 @@ function Protected({ children, roles }) {
       </div>
     );
   if (!user) return <Navigate to="/login" replace />;
+<<<<<<< HEAD
   if (user.must_change_password && location.pathname !== "/settings")
     return <Navigate to="/settings" replace />;
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
   if (roles && !roles.includes(user.role)) return <Navigate to="/" replace />;
   return children;
 }
@@ -84,6 +104,7 @@ export default function App() {
             <Route path="projects" element={<Projects />} />
             <Route path="projects/:id" element={<ProjectDetail />} />
             <Route
+<<<<<<< HEAD
               path="kanban"
               element={
                 <Protected
@@ -94,6 +115,8 @@ export default function App() {
               }
             />
             <Route
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
               path="clients"
               element={
                 <Protected roles={["Admin", "Admin Project", "Accounting"]}>

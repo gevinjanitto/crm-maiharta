@@ -18,8 +18,12 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
     [team, setTeam] = useState([]),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
+<<<<<<< HEAD
     [form, setForm] = useState({}),
     [file, setFile] = useState(null);
+=======
+    [form, setForm] = useState({});
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
   const revision = kind === "revisions",
     options = revision
       ? ["In-scope", "Out-of-scope", "Change Request"]
@@ -35,9 +39,13 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
       assigned_to: "",
       due_date: new Date(Date.now() + 604800000).toISOString().slice(0, 10),
       estimate: 0,
+<<<<<<< HEAD
       subtasks: "",
     });
     setFile(null);
+=======
+    });
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
     Promise.all([api.get("/projects"), api.get("/team")])
       .then(([p, t]) => {
         setProjects(
@@ -59,6 +67,7 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
   const save = async (e) => {
     e.preventDefault();
     setBusy(true);
+<<<<<<< HEAD
     const { project_id, subtasks, ...body } = form;
     try {
       const r = await api.post(`/projects/${project_id}/work/${kind}`, {
@@ -75,6 +84,12 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
       toast.success(
         `${revision ? "Revisi" : "Maintenance"} ditambahkan & masuk ke Kanban`,
       );
+=======
+    const { project_id, ...body } = form;
+    try {
+      await api.post(`/projects/${project_id}/work/${kind}`, body);
+      toast.success(`${revision ? "Revisi" : "Maintenance"} ditambahkan`);
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
       onSaved();
       onClose();
     } catch (e) {
@@ -160,6 +175,7 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
               onChange={change}
             />
           </div>
+<<<<<<< HEAD
           <div className="form-full">
             <Field
               label="Subtask Kanban (satu per baris)"
@@ -179,6 +195,8 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
               onChange={(e) => setFile(e.target.files[0])}
             />
           </div>
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
         </div>
         {error && (
           <p className="form-error" data-testid="work-form-error">

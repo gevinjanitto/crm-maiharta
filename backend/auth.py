@@ -10,7 +10,11 @@ def hash_password(p): return bcrypt.hashpw(p.encode(), bcrypt.gensalt()).decode(
 def verify_password(p, hashed):
     try: return bcrypt.checkpw(p.encode(), hashed.encode())
     except ValueError: return False
+<<<<<<< HEAD
 def public_user(u): return {k: u.get(k) for k in ['id','name','username','email','role','client_id','active']} | {'must_change_password': bool(u.get('must_change_password'))}
+=======
+def public_user(u): return {k: u.get(k) for k in ['id','name','username','email','role','client_id','active']}
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
 
 async def current_user(request: Request):
     bearer = request.headers.get('Authorization', '')
@@ -50,7 +54,11 @@ async def login(data: Login, request: Request, response: Response):
     expires = datetime.now(timezone.utc)+timedelta(seconds=seconds)
     await db.sessions.insert_one({'id':sid, 'user_id':u['id'], 'expires_at':expires})
     token = jwt.encode({'sub':u['id'], 'jti':sid, 'exp':expires}, SECRET, algorithm='HS256')
+<<<<<<< HEAD
     response.set_cookie('maiharta_session',token,httponly=True,secure=True,samesite='none',max_age=seconds,path='/')
+=======
+    response.set_cookie('maiharta_session',token,httponly=True,secure=True,samesite='lax',max_age=seconds,path='/')
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
     return {'token':token,'user':public_user(u)}
 
 @router.get('/me')
@@ -63,12 +71,20 @@ async def logout(request: Request, response: Response):
         payload = jwt.decode(token,SECRET,algorithms=['HS256'])
         await db.sessions.delete_one({'id':payload['jti']})
     except Exception: pass
+<<<<<<< HEAD
     response.delete_cookie('maiharta_session',path='/',secure=True,samesite='none')
+=======
+    response.delete_cookie('maiharta_session',path='/',secure=True,samesite='lax')
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
     return {'message':'Anda sudah keluar.'}
 
 @router.post('/password')
 async def change_password(data: PasswordChange, u=Depends(current_user)):
     if not verify_password(data.current_password,u['password_hash']): raise HTTPException(400,'Password saat ini tidak sesuai.')
+<<<<<<< HEAD
     await db.users.update_one({'id':u['id']},{'$set':{'password_hash':hash_password(data.new_password),'must_change_password':False}})
+=======
+    await db.users.update_one({'id':u['id']},{'$set':{'password_hash':hash_password(data.new_password)}})
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
     await db.sessions.delete_many({'user_id':u['id']})
     return {'message':'Password diubah. Silakan masuk kembali.'}

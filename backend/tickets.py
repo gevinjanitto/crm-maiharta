@@ -2,8 +2,11 @@ from fastapi import APIRouter,Depends,HTTPException
 from core import db,uid,now,authorize,project_scope,project_for,validate_assignee,TICKET_STATUSES,MANAGERS
 from auth import current_user
 from schemas import Record,TicketInput,TicketUpdate,CommentInput
+<<<<<<< HEAD
 from kanban import create_task,sync_task_status
 from mailer import notify_assignment
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
 router=APIRouter()
 async def visible_tickets(u):
     ids=await db.projects.distinct('id',project_scope(u))
@@ -60,6 +63,7 @@ async def update_ticket(tid:str,data:TicketUpdate,u=Depends(current_user)):
         if data.status in ['Diterima','Dikerjakan','Selesai'] and not update.get('approved',t.get('approved')): raise HTTPException(400,'Estimasi harus disetujui sebelum pekerjaan dimulai.')
     if data.status=='Dikerjakan' and not update.get('assigned_to',t.get('assigned_to')): raise HTTPException(400,'Tentukan developer sebelum pekerjaan dimulai.')
     update['updated_at']=now()
+<<<<<<< HEAD
     assignee=update.get('assigned_to',t.get('assigned_to',''))
     new_assignee=bool(assignee) and assignee!=t.get('assigned_to','')
     if data.status=='Diterima' and not t.get('task_id'):
@@ -69,6 +73,8 @@ async def update_ticket(tid:str,data:TicketUpdate,u=Depends(current_user)):
         await db.tasks.update_many({'source':'ticket','source_id':tid},{'$set':{'assigned_to':assignee,'updated_at':now()}})
         await notify_assignment(assignee,'tiket',t['title'],t['project_id'])
     if data.status in ['Dikerjakan','Selesai'] and data.status!=t['status']: await sync_task_status('ticket',tid,data.status)
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
     await db.tickets.update_one({'id':tid},{'$set':update})
     await db.ticket_comments.insert_one({'id':uid(),'ticket_id':tid,'message':f"Status diperbarui: {data.status}",'internal':False,'author_name':u['name'],'author_role':u['role'],'created_at':now(),'system':True})
     return ticket_public({**t,**update},u)

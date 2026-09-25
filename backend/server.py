@@ -8,9 +8,13 @@ from auth import router as auth_router
 from projects import router as projects_router
 from administration import router as admin_router
 from tickets import router as tickets_router
+<<<<<<< HEAD
 from kanban import router as kanban_router
 from finance import router as finance_router
 from seed import seed, seed_cost_types
+=======
+from seed import seed
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
 
 @asynccontextmanager
 async def lifespan(app):
@@ -20,15 +24,20 @@ async def lifespan(app):
     await db.captchas.create_index('expires_at', expireAfterSeconds=0)
     await db.sessions.create_index('expires_at', expireAfterSeconds=0)
     await db.login_attempts.create_index('created_at', expireAfterSeconds=600)
+<<<<<<< HEAD
     await db.tasks.create_index('project_id')
     await seed()
     await seed_cost_types()
+=======
+    await seed()
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
     yield
     client.close()
 
 app = FastAPI(title='CRM Maiharta', lifespan=lifespan)
 api = APIRouter(prefix='/api')
 @api.get('/')
+<<<<<<< HEAD
 async def root(): return {'name': 'CRM Maiharta', 'status': 'ok'}
 @api.get('/health')
 async def health(): return {'status': 'ok'}
@@ -40,3 +49,10 @@ if os.environ.get('APP_ORIGIN'): origins.append(os.environ['APP_ORIGIN'])
 cors = {'allow_origin_regex': '.*'} if '*' in origins or not origins else {'allow_origins': origins}
 app.add_middleware(CORSMiddleware, allow_credentials=True, allow_methods=['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'], allow_headers=['Content-Type', 'Authorization'], **cors)
 logging.basicConfig(level=logging.INFO)
+=======
+async def root(): return {'name':'CRM Maiharta','status':'ok'}
+for r in [auth_router, admin_router, projects_router, tickets_router]: api.include_router(r)
+app.include_router(api)
+app.add_middleware(CORSMiddleware,allow_origins=[os.environ['APP_ORIGIN']],allow_credentials=True,allow_methods=['GET','POST','PATCH','DELETE'],allow_headers=['Content-Type','Authorization'])
+logging.basicConfig(level=logging.INFO)
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b

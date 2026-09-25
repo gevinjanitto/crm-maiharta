@@ -1,14 +1,25 @@
 import asyncio
+<<<<<<< HEAD
+=======
+from pathlib import Path
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
 from urllib.parse import quote
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Response
 from core import db, uid, now, authorize, project_scope, project_for, project_public, log_event, validate_assignee, MANAGERS, FINANCE, STATUSES
 from auth import current_user
 from schemas import Record, ProjectInput, StatusInput, FeatureInput, ProgressInput, CostInput, WorkInput, WorkUpdate, DeployInput
+<<<<<<< HEAD
 from storage import get_object
 from documents import store_document, DOC_TYPES
 from kanban import create_task, sync_task_status
 
 router = APIRouter()
+=======
+from storage import put_object, get_object
+
+router = APIRouter()
+DOC_TYPES = ['Kontrak','Requirement','Rincian Fitur','Timeline','UI/UX Design','Penawaran Harga','Invoice','Akses Server','BAST','Dokumentasi Penggunaan']
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
 
 @router.get('/projects', response_model=list[Record])
 async def projects(u=Depends(current_user)):
@@ -47,7 +58,11 @@ async def delete_project(pid:str,u=Depends(current_user)):
     p=await project_for(u,pid,'project.write')
     if p['status']!='Project Masuk': raise HTTPException(400,'Hanya project baru yang dapat dihapus.')
     await db.projects.delete_one({'id':pid})
+<<<<<<< HEAD
     for collection in ['project_features','project_documents','project_status_logs','revisions','maintenances','deployments','tickets','tasks','expenses']:
+=======
+    for collection in ['project_features','project_documents','project_status_logs','revisions','maintenances','deployments','tickets']:
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
         await db[collection].delete_many({'project_id':pid})
     return {'message':'Project dihapus.'}
 
@@ -128,7 +143,11 @@ async def delete_feature(pid:str,fid:str,u=Depends(current_user)):
 @router.get('/projects/{pid}/costs')
 async def costs(pid:str,u=Depends(current_user)):
     p=await project_for(u,pid,'cost.read')
+<<<<<<< HEAD
     return {k:p.get(k,0) for k in ['value','development_cost','server_cost','other_cost']} | {'profit':p['value']-p.get('development_cost',0)-p.get('server_cost',0)-p.get('other_cost',0)}
+=======
+    return {k:p.get(k,0) for k in ['value','development_cost','server_cost']} | {'profit':p['value']-p.get('development_cost',0)-p.get('server_cost',0)}
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
 
 @router.post('/projects/{pid}/costs')
 async def update_costs(pid:str,data:CostInput,u=Depends(current_user)):
@@ -140,7 +159,11 @@ async def update_costs(pid:str,data:CostInput,u=Depends(current_user)):
 @router.get('/projects/{pid}/documents',response_model=list[Record])
 async def documents(pid:str,u=Depends(current_user)):
     await project_for(u,pid,'document.read')
+<<<<<<< HEAD
     query={'project_id':pid,'is_deleted':False,'task_id':{'$exists':False}}
+=======
+    query={'project_id':pid,'is_deleted':False}
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
     if u['role']=='Client': query['visibility']='Client'
     if u['role']=='Accounting': query['kind']={'$in':['Kontrak','Penawaran Harga','Invoice','BAST']}
     return await db.project_documents.find(query,{'_id':0,'storage_path':0}).to_list(1000)
@@ -148,8 +171,24 @@ async def documents(pid:str,u=Depends(current_user)):
 @router.post('/projects/{pid}/documents',response_model=Record)
 async def upload_document(pid:str,file:UploadFile=File(...),kind:str=Form(...),visibility:str=Form('Internal'),u=Depends(current_user)):
     await project_for(u,pid,'document.write')
+<<<<<<< HEAD
     if kind=='Lampiran Task': raise HTTPException(400,'Lampiran task diunggah melalui Kanban.')
     return await store_document(pid,u,file,kind,visibility)
+=======
+    if kind not in DOC_TYPES or visibility not in ['Internal','Client']: raise HTTPException(400,'Kategori atau visibilitas tidak valid.')
+    if kind=='Akses Server' and visibility=='Client': raise HTTPException(400,'Dokumen akses server wajib internal.')
+    ext=Path(file.filename or '').suffix.lower()
+    if ext not in ['.pdf','.docx','.xlsx','.txt','.csv','.png','.jpg','.jpeg','.webp']: raise HTTPException(400,'Format tidak didukung. Gunakan PDF, DOCX, XLSX, TXT, CSV, atau gambar.')
+    data=await file.read(10*1024*1024+1)
+    if not data or len(data)>10*1024*1024: raise HTTPException(400,'File harus berukuran 1 byte hingga 10 MB.')
+    doc_id=uid()
+    try: result=await asyncio.to_thread(put_object,f'crm-maiharta/uploads/{u["id"]}/{doc_id}{ext}',data,file.content_type or 'application/octet-stream')
+    except Exception: raise HTTPException(502,'Penyimpanan dokumen belum dapat dihubungi. Silakan coba kembali.')
+    doc={'id':doc_id,'project_id':pid,'name':Path(file.filename).name,'kind':kind,'visibility':visibility,'size':len(data),'storage_path':result['path'],'content_type':file.content_type or 'application/octet-stream','created_at':now(),'uploaded_by':u['name'],'is_deleted':False}
+    await db.project_documents.insert_one(doc.copy())
+    doc.pop('storage_path')
+    return doc
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
 
 @router.get('/projects/{pid}/documents/{did}/download')
 async def download_document(pid:str,did:str,u=Depends(current_user)):
@@ -160,7 +199,11 @@ async def download_document(pid:str,did:str,u=Depends(current_user)):
     d=await db.project_documents.find_one(q,{'_id':0})
     if not d: raise HTTPException(404,'Dokumen tidak ditemukan.')
     try: content=await asyncio.to_thread(get_object,d['storage_path'])
+<<<<<<< HEAD
     except Exception: raise HTTPException(503,'Dokumen belum dapat diunduh.')
+=======
+    except Exception: raise HTTPException(502,'Dokumen belum dapat diunduh.')
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
     return Response(content,media_type=d['content_type'],headers={'Content-Disposition':f"attachment; filename*=UTF-8''{quote(d['name'])}",'X-Content-Type-Options':'nosniff'})
 
 @router.delete('/projects/{pid}/documents/{did}')
@@ -199,10 +242,14 @@ async def create_work(pid:str,kind:str,data:WorkInput,u=Depends(current_user)):
     if data.kind not in allowed: raise HTTPException(400,'Jenis pekerjaan tidak valid.')
     if kind=='maintenances' and not p.get('production_at'): raise HTTPException(400,'Maintenance hanya dapat dibuat setelah project production.')
     await validate_assignee(data.assigned_to,p)
+<<<<<<< HEAD
     body=data.model_dump(mode='json'); subtasks=body.pop('subtasks')
     doc={**body,'id':uid(),'project_id':pid,'status':'Terbuka','approved':False,'created_at':now(),'completed_at':None,'created_by':u['id']}
     task=await create_task(pid,u,title=data.title,description=data.description,status='Revisi' if kind=='revisions' else 'Belum Mulai',assigned_to=data.assigned_to,due_date=body['due_date'],source=work_action(kind),source_id=doc['id'],subtasks=subtasks)
     doc['task_id']=task['id']
+=======
+    doc={**data.model_dump(mode='json'),'id':uid(),'project_id':pid,'status':'Terbuka','approved':False,'created_at':now(),'completed_at':None,'created_by':u['id']}
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
     await db[kind].insert_one(doc.copy())
     return doc
 
@@ -214,7 +261,10 @@ async def update_work(pid:str,kind:str,wid:str,data:WorkUpdate,u=Depends(current
     if doc['kind'] in ['Out-of-scope','Change Request'] and data.status!='Terbuka' and (doc.get('estimate',0)<=0 or not (data.approved or doc.get('approved'))): raise HTTPException(400,'Pekerjaan di luar scope wajib memiliki estimasi biaya dan persetujuan.')
     update={'status':data.status,'approved':data.approved or doc.get('approved',False),'completed_at':now() if data.status=='Selesai' else None}
     await db[kind].update_one({'id':wid,'project_id':pid},{'$set':update})
+<<<<<<< HEAD
     if data.status in ['Dikerjakan','Selesai'] and data.status!=doc['status']: await sync_task_status(work_action(kind),wid,data.status)
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
     return {**doc,**update}
 
 @router.get('/projects/{pid}/deployments',response_model=list[Record])

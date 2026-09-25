@@ -1,19 +1,25 @@
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+<<<<<<< HEAD
 const TOKEN_KEY = "maiharta_token";
 export const getToken = () => localStorage.getItem(TOKEN_KEY);
 export const setToken = (t) =>
   t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY);
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
 export const api = axios.create({
   baseURL: `${process.env.REACT_APP_BACKEND_URL}/api`,
   withCredentials: true,
 });
+<<<<<<< HEAD
 api.interceptors.request.use((config) => {
   const t = getToken();
   if (t) config.headers.Authorization = `Bearer ${t}`;
   return config;
 });
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
 export const errorText = (e) => {
   const detail = e.response?.data?.detail;
   return typeof detail === "string"
@@ -96,6 +102,7 @@ export const statuses = [
   "Uploaded to Production",
   "Selesai",
 ];
+<<<<<<< HEAD
 export const taskStatuses = [
   "Belum Mulai",
   "Dikerjakan",
@@ -105,6 +112,8 @@ export const taskStatuses = [
 ];
 export const serverStages = ["Belum Naik", "Dev Server", "Production"];
 export const slug = (s) => String(s).toLowerCase().replace(/\s+/g, "-");
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
 export const ticketStatuses = [
   "Baru",
   "Ditinjau",

@@ -14,7 +14,12 @@ import {
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { useAuth } from "../App";
+<<<<<<< HEAD
 import { api, errorText, setToken } from "../lib/api";
+=======
+import { api, errorText } from "../lib/api";
+import { Footer } from "../components/Common";
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
 
 export default function Login() {
   const { user, setUser, loading } = useAuth();
@@ -62,7 +67,10 @@ export default function Login() {
         ...form,
         captcha_id: captcha.id,
       });
+<<<<<<< HEAD
       setToken(r.data.token);
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
       setUser(r.data.user);
     } catch (e) {
       setError(errorText(e));
@@ -84,6 +92,27 @@ export default function Login() {
         my.set(0);
       }}
     >
+<<<<<<< HEAD
+=======
+      <header className="login-top">
+        <a
+          href="https://www.maiharta.com"
+          target="_blank"
+          rel="noreferrer"
+          data-testid="login-brand-link"
+        >
+          <img
+            src="/assets/logo.webp"
+            alt="MaiHarta"
+            className="brand-logo"
+            data-testid="login-logo"
+          />
+        </a>
+        <span className="login-top-note" data-testid="login-workspace-label">
+          <span className="live-dot" /> Your next great project starts here.
+        </span>
+      </header>
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
       <main className="login-stage">
         <section className="login-visual">
           <div className="visual-grid" />
@@ -134,11 +163,17 @@ export default function Login() {
             </motion.div>
           </div>
           <div className="visual-bottom" data-testid="login-visual-bottom">
+<<<<<<< HEAD
             <span data-testid="login-copyright">
               © {new Date().getFullYear()} CRM Maiharta
             </span>
             <span>
               <i />
+=======
+            <span>CRAFTED WITH PURPOSE, ROOTED IN BALI.</span>
+            <span>
+              01 — 03 <i />
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
               <i />
               <i />
             </span>
@@ -147,12 +182,18 @@ export default function Login() {
         <section className="login-form-panel">
           <div className="form-panel-inner">
             <div className="workspace-mark" data-testid="workspace-mark">
+<<<<<<< HEAD
               <img
                 src="/assets/logo-mark.webp"
                 alt="MaiHarta"
                 className="mini-brand"
                 data-testid="login-brand-mark"
               />
+=======
+              <span className="mini-brand">
+                M<span>H</span>
+              </span>
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
               <span>
                 CRM <b>maiharta</b>
               </span>
@@ -301,6 +342,7 @@ export default function Login() {
             </div>
           </div>
           <div className="panel-bottom" data-testid="login-panel-bottom">
+<<<<<<< HEAD
             <span>
               Design dan develop by{" "}
               <a
@@ -315,6 +357,14 @@ export default function Login() {
           </div>
         </section>
       </main>
+=======
+            <span>Built for meaningful collaboration.</span>
+            <ArrowUpRight size={16} />
+          </div>
+        </section>
+      </main>
+      <Footer />
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
     </div>
   );
 }

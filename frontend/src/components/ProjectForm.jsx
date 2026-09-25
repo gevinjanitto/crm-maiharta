@@ -8,6 +8,7 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
     [team, setTeam] = useState([]),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
+<<<<<<< HEAD
   const [form, setForm] = useState({}),
     [newClient, setNewClient] = useState(null),
     [savingClient, setSavingClient] = useState(false);
@@ -30,6 +31,9 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
       setSavingClient(false);
     }
   };
+=======
+  const [form, setForm] = useState({});
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
   useEffect(() => {
     if (!open) return;
     setError("");
@@ -113,6 +117,7 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
               required
             />
           </div>
+<<<<<<< HEAD
           <div>
             <Field
               label="Client"
@@ -206,6 +211,20 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
               </div>
             </div>
           )}
+=======
+          <Field
+            label="Client"
+            name="client_id"
+            as="select"
+            options={[
+              { value: "", label: "Pilih client" },
+              ...clients.map((c) => ({ value: c.id, label: c.name })),
+            ]}
+            value={form.client_id || ""}
+            onChange={change}
+            required
+          />
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
           <Field
             label="Kategori"
             name="category"

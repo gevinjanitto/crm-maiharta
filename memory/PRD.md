@@ -27,12 +27,15 @@ Pilihan pengguna: bahasa Indonesia, akun awal tiap role disiapkan; email Admin p
 - API /api/auth/*, /users, /team, /clients, /projects, /projects/:id/{features,costs,documents,status,history,deployments}, /projects/:id/work/{revisions,maintenances}, /work/:kind, /tickets, /tickets/:id/comments, /dashboard, /reports/projects.csv.
 - Tidak ada API mock. Contoh awal: 8 project, 5 client, 5 akun, 4 tiket, revisi dan maintenance; data tersimpan dan dapat diedit. Penyimpanan file benar-benar terintegrasi.
 
+<<<<<<< HEAD
 ## Implementasi — 25 September 2026 (deploy-ready Vercel + Railway + Cloudinary)
 - Backend: storage.py diganti ke Cloudinary (raw/authenticated, signed URL), CORS dari env `CORS_ORIGINS` (koma), `/api/health`, cookie SameSite=None + Bearer token; `railway.json`, `Procfile`, `.python-version`, requirements bersih (tanpa emergentintegrations); upload tanpa kredensial Cloudinary → 503 dengan pesan Indonesia.
 - Frontend: token disimpan localStorage + interceptor Authorization; `vercel.json` (SPA rewrite, CI=false); logo diganti mark MaiHarta (`/assets/logo-mark.webp`, favicon); footer login dinaikkan ke dalam panel ("© 2026 CRM Maiharta" kiri, "Design dan develop by MaiHarta" kanan), Footer bawah login dihapus; tema light-only modern (`modern.css`), toggle tema dihapus.
 - README.md berisi langkah deploy Railway/Vercel dan daftar akun; `.env.example` di backend & frontend; `.gitignore` kini mengabaikan `.env`.
 - Testing agent iterasi 2: semua flow (login 5 role, Bearer/me/logout, CORS, dashboard, navigasi, footer/logo) PASS.
 
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
 ## Implementasi — 25 September 2026
 - Login ber-CAPTCHA, reveal password, remember session, Barong mouse-tracking parallax, logo asli, footer brand; page title/favicon.
 - Dashboard scoped role dengan KPI, finansial, distribusi status, aktivitas, deadline; sumber data API/database.

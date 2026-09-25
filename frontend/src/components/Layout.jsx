@@ -3,7 +3,10 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   FolderKanban,
+<<<<<<< HEAD
   KanbanSquare,
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
   UsersRound,
   Wallet,
   RotateCcw,
@@ -13,6 +16,11 @@ import {
   Settings,
   LogOut,
   Search,
+<<<<<<< HEAD
+=======
+  Sun,
+  Moon,
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
   Menu,
   ChevronDown,
   ArrowUpRight,
@@ -24,12 +32,15 @@ import { initials } from "../lib/api";
 const nav = [
   ["/", "Dashboard", LayoutDashboard],
   ["/projects", "Semua Project", FolderKanban],
+<<<<<<< HEAD
   [
     "/kanban",
     "Kanban",
     KanbanSquare,
     ["Admin", "Admin Project", "Developer", "Client"],
   ],
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
   ["/clients", "Client", UsersRound, ["Admin", "Admin Project", "Accounting"]],
   ["/finance", "Keuangan", Wallet, ["Admin", "Accounting"]],
   ["/revisions", "Revisi", RotateCcw, ["Admin", "Admin Project", "Developer"]],
@@ -51,7 +62,19 @@ export default function Layout() {
     location = useLocation(),
     navigate = useNavigate();
   const [open, setOpen] = useState(false),
+<<<<<<< HEAD
     [search, setSearch] = useState("");
+=======
+    [search, setSearch] = useState(""),
+    [light, setLight] = useState(
+      localStorage.getItem("maiharta-theme") === "light",
+    );
+  useEffect(() => {
+    document.documentElement.classList.toggle("light-mode", light);
+    localStorage.setItem("maiharta-theme", light ? "light" : "dark");
+    return () => document.documentElement.classList.remove("light-mode");
+  }, [light]);
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
   useEffect(() => setOpen(false), [location.pathname]);
   const title =
     nav.find((n) => n[0] === location.pathname)?.[1] ||
@@ -77,6 +100,7 @@ export default function Layout() {
           data-testid="sidebar-logo-link"
         >
           <img
+<<<<<<< HEAD
             src="/assets/logo-mark.webp"
             alt="MaiHarta"
             data-testid="sidebar-logo"
@@ -92,6 +116,16 @@ export default function Layout() {
           <span className="workspace-icon">
             <img src="/assets/logo-mark.webp" alt="" />
           </span>
+=======
+            src="/assets/logo.webp"
+            alt="MaiHarta"
+            data-testid="sidebar-logo"
+          />
+          <span>PROJECT WORKSPACE</span>
+        </NavLink>
+        <div className="workspace-switch" data-testid="workspace-info">
+          <span className="workspace-icon">M</span>
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
           <div>
             <b>MaiHarta Workspace</b>
             <small>
@@ -192,6 +226,17 @@ export default function Layout() {
               />
               <span>↵</span>
             </form>
+<<<<<<< HEAD
+=======
+            <button
+              data-testid="toggle-theme"
+              className="icon-button"
+              onClick={() => setLight(!light)}
+              title={light ? "Mode gelap" : "Mode terang"}
+            >
+              {light ? <Moon size={19} /> : <Sun size={19} />}
+            </button>
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
             <span className="topbar-separator" />
             <button
               className="topbar-profile"
