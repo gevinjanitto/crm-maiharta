@@ -1,5 +1,5 @@
 from fastapi import APIRouter,Depends,HTTPException
-from core import db,uid,now,authorize,project_scope,project_for,validate_assignee,TICKET_STATUSES,MANAGERS
+from core import db,uid,now,authorize,project_scope,project_for,validate_assignee,log_activity,TICKET_STATUSES,MANAGERS
 from auth import current_user
 from schemas import Record,TicketInput,TicketUpdate,CommentInput
 from kanban import create_task,sync_task_status
@@ -32,6 +32,7 @@ async def create_ticket(data:TicketInput,u=Depends(current_user)):
     task=await create_task(t['project_id'],u,title=f"[{t['code']}] {t['title']}",description=t['description'],priority=t['priority'],source='ticket',source_id=t['id'],tags=['Tiket',t['category']])
     t['task_id']=task['id']
     await db.tickets.insert_one(t.copy())
+    await log_activity(u,'buat','tiket',t['id'],t['title'],t['project_id'])
     return t
 @router.get('/tickets/{tid}',response_model=Record)
 async def get_ticket(tid:str,u=Depends(current_user)): return ticket_public(await ticket_for(u,tid,'ticket.read'),u)
@@ -74,6 +75,7 @@ async def update_ticket(tid:str,data:TicketUpdate,u=Depends(current_user)):
     if data.status=='Ditutup' and data.status!=t['status']: await sync_task_status('ticket',tid,'Selesai')
     if data.status=='Ditolak' and data.status!=t['status']: await db.tasks.delete_many({'source':'ticket','source_id':tid})
     await db.tickets.update_one({'id':tid},{'$set':update})
+    await log_activity(u,'ubah status','tiket',tid,t['title'],t['project_id'],{'dari':t['status'],'ke':data.status})
     await db.ticket_comments.insert_one({'id':uid(),'ticket_id':tid,'message':f"Status diperbarui: {data.status}",'internal':False,'author_name':u['name'],'author_role':u['role'],'created_at':now(),'system':True})
     return ticket_public({**t,**update},u)
 

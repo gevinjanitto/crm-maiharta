@@ -17,6 +17,9 @@ TICKET_STATUSES = ['Baru', 'Ditinjau', 'Menunggu Klarifikasi', 'Diterima', 'Dito
 TASK_STATUSES = ['Belum Mulai', 'Dikerjakan', 'Testing', 'Revisi', 'Selesai']
 SERVER_STAGES = ['Belum Naik', 'Dev Server', 'Production']
 DEFAULT_CLIENT_PASSWORD = '12345678'
+MAINTENANCE_STATUSES = ['Belum dikerjakan', 'Development', 'Testing', 'Selesai']
+WORK_STATUSES = ['Terbuka', 'Dikerjakan', 'Selesai']
+PLATFORMS = ['Web', 'Mobile Android', 'Mobile iOS', 'Desktop', 'UI/UX Design', 'Lainnya']
 MANAGERS = ['Admin', 'Admin Project']
 FINANCE = ['Admin', 'Accounting']
 PERMISSIONS = {
@@ -34,6 +37,7 @@ PERMISSIONS = {
     'ticket.read': MANAGERS + ['Developer', 'Client'], 'ticket.create': MANAGERS + ['Client'],
     'ticket.triage': MANAGERS, 'ticket.progress': MANAGERS + ['Developer', 'Client'],
     'dashboard.read': ROLES, 'history.read': ROLES,
+    'audit.read': ['Admin'], 'trash.read': MANAGERS, 'trash.write': MANAGERS,
 }
 async def authorize(user, action, resource=None):
     allowed = user['role'] in PERMISSIONS.get(action, [])
@@ -52,7 +56,8 @@ async def project_for(user, project_id, action='project.read'):
     return p
 
 def project_public(p, user):
-    fields = ['id','code','name','description','client_id','client_name','category','type','status','progress','start_date','due_date','assigned_to','created_at','updated_at','production_at','tickets_closed']
+    fields = ['id','code','name','description','client_id','client_name','category','platforms','type','status','progress','start_date','due_date','assigned_to','created_at','updated_at','production_at','tickets_closed']
+    p = {**p, 'platforms': p.get('platforms') or [p.get('category', 'Web')]}
     if user['role'] in MANAGERS + ['Accounting']: fields += ['value']
     if user['role'] in FINANCE: fields += ['development_cost','server_cost','other_cost']
     if user['role'] in MANAGERS + ['Developer']: fields += ['internal_notes']
@@ -75,6 +80,17 @@ async def recalc_progress(pid):
     all_count = await db.project_features.count_documents({'project_id': pid})
     done = await db.project_features.count_documents({'project_id': pid, 'status': 'Selesai'})
     await db.projects.update_one({'id': pid}, {'$set': {'progress': round(done / all_count * 100) if all_count else 0}})
+
+async def log_activity(user, action, entity_type, entity_id='', name='', project_id='', details=None):
+    await db.activity_logs.insert_one({'id': uid(), 'user_id': user.get('id', ''), 'user_name': user.get('name', 'Sistem'), 'user_role': user.get('role', ''), 'action': action, 'entity_type': entity_type, 'entity_id': entity_id, 'name': name, 'project_id': project_id or '', 'details': details or {}, 'created_at': now()})
+
+async def trash_item(user, collection, doc, entity_type, name, related=None):
+    related = related or []
+    await db.trash.insert_one({'id': uid(), 'collection': collection, 'entity_type': entity_type, 'entity_id': doc['id'], 'name': name, 'project_id': doc.get('project_id', doc['id'] if collection == 'projects' else ''), 'data': doc, 'related': related, 'deleted_by': user['id'], 'deleted_by_name': user['name'], 'deleted_at': now()})
+    await db[collection].delete_one({'id': doc['id']})
+    for r in related:
+        if r['docs']: await db[r['collection']].delete_many({'id': {'$in': [d['id'] for d in r['docs']]}})
+    await log_activity(user, 'hapus', entity_type, doc['id'], name, doc.get('project_id', ''), {'ke_arsip': True})
 
 async def validate_assignee(user_id, project=None):
     if not user_id: return

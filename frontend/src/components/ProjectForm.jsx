@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
+import { Paperclip, X } from "lucide-react";
 import { toast } from "sonner";
 import { api, errorText } from "../lib/api";
 import { Modal, Field, SaveButton } from "./Common";
 import { Button } from "./ui/button";
+const PLATFORMS = ["Web", "Mobile Android", "Mobile iOS", "Desktop", "UI/UX Design", "Lainnya"];
 export const ProjectForm = ({ open, onClose, onSaved, project }) => {
   const [clients, setClients] = useState([]),
     [team, setTeam] = useState([]),
     [busy, setBusy] = useState(false),
-    [error, setError] = useState("");
+    [error, setError] = useState(""),
+    [files, setFiles] = useState([]);
   const [form, setForm] = useState({}),
     [newClient, setNewClient] = useState(null),
     [savingClient, setSavingClient] = useState(false);
@@ -33,27 +36,30 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
   useEffect(() => {
     if (!open) return;
     setError("");
+    setFiles([]);
     setForm(
       project
-        ? Object.fromEntries(
-            [
-              "name",
-              "client_id",
-              "description",
-              "category",
-              "type",
-              "value",
-              "start_date",
-              "due_date",
-              "assigned_to",
-              "internal_notes",
-            ].map((k) => [k, project[k] ?? ""]),
-          )
+        ? {
+            ...Object.fromEntries(
+              [
+                "name",
+                "client_id",
+                "description",
+                "type",
+                "value",
+                "start_date",
+                "due_date",
+                "assigned_to",
+                "internal_notes",
+              ].map((k) => [k, project[k] ?? ""]),
+            ),
+            platforms: project.platforms || [],
+          }
         : {
             name: "",
             client_id: "",
             description: "",
-            category: "Web Development",
+            platforms: ["Web"],
             type: "Besar",
             value: 0,
             start_date: new Date().toISOString().slice(0, 10),
@@ -81,10 +87,24 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
     e.preventDefault();
     setBusy(true);
     setError("");
+    if (!(form.platforms || []).length) {
+      setError("Pilih minimal satu platform.");
+      setBusy(false);
+      return;
+    }
     try {
       const r = project
         ? await api.patch(`/projects/${project.id}`, form)
         : await api.post("/projects", form);
+      for (const f of files) {
+        const fd = new FormData();
+        fd.append("file", f);
+        fd.append("kind", "Lampiran Project");
+        fd.append("visibility", "Internal");
+        await api
+          .post(`/projects/${r.data.id}/documents`, fd)
+          .catch((e) => toast.error(`${f.name}: ${errorText(e)}`));
+      }
       toast.success(project ? "Project diperbarui" : "Project berhasil dibuat");
       onSaved(r.data);
       onClose();
@@ -206,21 +226,35 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
               </div>
             </div>
           )}
-          <Field
-            label="Kategori"
-            name="category"
-            as="select"
-            options={[
-              "Web Development",
-              "Web Application",
-              "E-Commerce",
-              "Mobile Application",
-              "UI/UX Design",
-              "Lainnya",
-            ]}
-            value={form.category || "Web Development"}
-            onChange={change}
-          />
+          <div className="form-full">
+            <p className="form-note">
+              Platform <em className="req-mark">*</em>{" "}
+              <small className="opt-mark">(bisa lebih dari satu)</small>
+            </p>
+            <div className="platform-picker" data-testid="platform-picker">
+              {PLATFORMS.map((pl) => {
+                const on = (form.platforms || []).includes(pl);
+                return (
+                  <label key={pl} className={`platform-chip ${on ? "active" : ""}`}>
+                    <input
+                      type="checkbox"
+                      data-testid={`platform-${pl.toLowerCase().replace(/[^a-z]+/g, "-")}`}
+                      checked={on}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          platforms: e.target.checked
+                            ? [...(form.platforms || []), pl]
+                            : form.platforms.filter((x) => x !== pl),
+                        })
+                      }
+                    />
+                    {pl}
+                  </label>
+                );
+              })}
+            </div>
+          </div>
           <Field
             label="Skala project"
             name="type"
@@ -228,6 +262,7 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
             options={["Besar", "Kecil"]}
             value={form.type || "Besar"}
             onChange={change}
+            required
           />
           <Field
             label="Nilai project (Rp)"
@@ -265,7 +300,10 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
             />
           </div>
           <div className="form-full">
-            <p className="form-note">Developer yang ditugaskan</p>
+            <p className="form-note">
+              Developer yang ditugaskan{" "}
+              <small className="opt-mark">(opsional)</small>
+            </p>
             {team.map((t) => (
               <label key={t.id} className="checkbox-label">
                 <input
@@ -294,7 +332,40 @@ export const ProjectForm = ({ open, onClose, onSaved, project }) => {
               onChange={change}
             />
           </div>
+          {!project && (
+            <div className="form-full">
+              <Field
+                label="Lampiran dokumen (bisa lebih dari satu, maks. 10 MB/file)"
+                name="project_files"
+                type="file"
+                multiple
+                accept=".pdf,.docx,.xlsx,.txt,.csv,.png,.jpg,.jpeg,.webp"
+                onChange={(e) => setFiles([...files, ...Array.from(e.target.files)])}
+              />
+              {files.length > 0 && (
+                <ul className="file-list" data-testid="project-file-list">
+                  {files.map((f, i) => (
+                    <li key={i}>
+                      <Paperclip size={14} /> {f.name}
+                      <small>{(f.size / 1024).toFixed(0)} KB</small>
+                      <button
+                        type="button"
+                        className="ck-icon danger"
+                        onClick={() => setFiles(files.filter((_, j) => j !== i))}
+                        aria-label="hapus file"
+                      >
+                        <X size={13} />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
         </div>
+        <p className="form-legend">
+          <em>*</em> wajib diisi
+        </p>
         {error && (
           <p className="form-error" data-testid="project-form-error">
             {error}

@@ -69,7 +69,7 @@ export default function ProjectDetail() {
         Semua project
       </Link>
       <PageHead
-        eyebrow={`${p.code} / ${p.category}`}
+        eyebrow={`${p.code} / ${(p.platforms || [p.category]).join(" · ")}`}
         title={p.name}
         description={p.client_name}
       >

@@ -10,7 +10,8 @@ from administration import router as admin_router
 from tickets import router as tickets_router
 from kanban import router as kanban_router
 from finance import router as finance_router
-from seed import seed, seed_cost_types, backfill_tasks
+from audit import router as audit_router
+from seed import seed, seed_cost_types, backfill_tasks, migrate
 
 @asynccontextmanager
 async def lifespan(app):
@@ -21,9 +22,12 @@ async def lifespan(app):
     await db.sessions.create_index('expires_at', expireAfterSeconds=0)
     await db.login_attempts.create_index('created_at', expireAfterSeconds=600)
     await db.tasks.create_index('project_id')
+    await db.activity_logs.create_index('created_at')
+    await db.trash.create_index('deleted_at')
     await seed()
     await seed_cost_types()
     await backfill_tasks()
+    await migrate()
     yield
     client.close()
 
@@ -33,7 +37,7 @@ api = APIRouter(prefix='/api')
 async def root(): return {'name': 'CRM Maiharta', 'status': 'ok'}
 @api.get('/health')
 async def health(): return {'status': 'ok'}
-for r in [auth_router, admin_router, projects_router, tickets_router, kanban_router, finance_router]: api.include_router(r)
+for r in [auth_router, admin_router, projects_router, tickets_router, kanban_router, finance_router, audit_router]: api.include_router(r)
 app.include_router(api)
 
 origins = [o.strip() for o in os.environ.get('CORS_ORIGINS', '').split(',') if o.strip()]

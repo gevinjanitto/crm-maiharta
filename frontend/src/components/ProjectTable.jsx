@@ -44,7 +44,7 @@ export const ProjectTable = ({ projects, compact = false }) => (
                     <div>
                       <b>{p.name}</b>
                       <small>
-                        {p.code} · {p.category}
+                        {p.code} · {(p.platforms || [p.category]).join(", ")}
                       </small>
                     </div>
                   </Link>

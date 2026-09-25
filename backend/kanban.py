@@ -1,6 +1,6 @@
 from datetime import datetime, timezone, timedelta
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
-from core import db, uid, now, authorize, project_scope, project_for, validate_assignee, project_statuses, recalc_progress, MANAGERS
+from core import db, uid, now, authorize, project_scope, project_for, validate_assignee, project_statuses, recalc_progress, log_activity, trash_item, MANAGERS
 from auth import current_user
 from schemas import Record, TaskInput, TaskUpdate, SubtaskInput, SubtaskUpdate, StatusColumnInput, StatusColumnUpdate, ReorderInput, TaskCommentInput, TimeEntryInput, BulkTaskInput
 from documents import store_document
@@ -55,8 +55,11 @@ async def sync_task_status(source, source_id, status):
 async def sync_source(t, status, p):
     kind, src, sid = kind_of(p, status), t.get('source'), t.get('source_id')
     if src in ['revision', 'maintenance']:
-        s = {'done': 'Selesai', 'active': 'Dikerjakan', 'todo': 'Terbuka'}[kind]
-        await db['revisions' if src == 'revision' else 'maintenances'].update_one({'id': sid}, {'$set': {'status': s, 'completed_at': now() if kind == 'done' else None}})
+        coll = 'maintenances' if src == 'maintenance' else 'revisions'
+        if src == 'maintenance': s = {'done': 'Selesai', 'active': 'Testing' if status == 'Testing' else 'Development', 'todo': 'Belum dikerjakan'}[kind]
+        else: s = {'done': 'Selesai', 'active': 'Dikerjakan', 'todo': 'Terbuka'}[kind]
+        await db[coll].update_one({'id': sid}, {'$set': {'status': s, 'completed_at': now() if kind == 'done' else None}})
+        if src == 'maintenance' and kind == 'active': await db[coll].update_one({'id': sid, 'started_date': None}, {'$set': {'started_date': now()[:10]}})
     elif src == 'ticket':
         if kind == 'done': await db.tickets.update_one({'id': sid, 'status': {'$in': ['Diterima', 'Dikerjakan']}}, {'$set': {'status': 'Selesai', 'updated_at': now()}})
         elif kind == 'active': await db.tickets.update_one({'id': sid, 'status': 'Diterima'}, {'$set': {'status': 'Dikerjakan', 'updated_at': now()}})
@@ -92,6 +95,7 @@ async def save_statuses(pid, cols):
 async def add_status(pid: str, data: StatusColumnInput, u=Depends(current_user)):
     p = await project_for(u, pid, 'task.write'); cols = project_statuses(p)
     if data.name in [c['name'] for c in cols]: raise HTTPException(400, 'Nama status sudah dipakai.')
+    await log_activity(u, 'buat', 'status kanban', '', data.name, pid)
     return await save_statuses(pid, cols + [{'id': uid(), **data.model_dump()}])
 
 @router.patch('/projects/{pid}/statuses/{sid}', response_model=list[Record])
@@ -104,6 +108,7 @@ async def edit_status(pid: str, sid: str, data: StatusColumnUpdate, u=Depends(cu
         if update['name'] in [x['name'] for x in cols]: raise HTTPException(400, 'Nama status sudah dipakai.')
         await db.tasks.update_many({'project_id': pid, 'status': c['name']}, {'$set': {'status': update['name']}})
     c.update(update)
+    await log_activity(u, 'ubah', 'status kanban', sid, c['name'], pid, update)
     return await save_statuses(pid, cols)
 
 @router.delete('/projects/{pid}/statuses/{sid}', response_model=list[Record])
@@ -116,6 +121,7 @@ async def delete_status(pid: str, sid: str, move_to: str = '', u=Depends(current
     if move_to and move_to not in [x['name'] for x in rest]: raise HTTPException(400, 'Status tujuan tidak ditemukan.')
     target = move_to or rest[0]['name']
     await db.tasks.update_many({'project_id': pid, 'status': c['name']}, {'$set': {'status': target}})
+    await log_activity(u, 'hapus', 'status kanban', sid, c['name'], pid, {'task_dipindah_ke': target})
     return await save_statuses(pid, rest)
 
 @router.post('/projects/{pid}/statuses/reorder', response_model=list[Record])
@@ -164,6 +170,7 @@ async def add_task(pid: str, data: TaskInput, u=Depends(current_user)):
     p = await project_for(u, pid, 'task.write')
     await validate_assignee(data.assigned_to, p)
     t = await create_task(pid, u, **data.model_dump(mode='json'))
+    await log_activity(u, 'buat', 'task', t['id'], t['title'], pid)
     return (await enrich([t], u))[0]
 
 @router.post('/projects/{pid}/tasks/bulk')
@@ -171,13 +178,15 @@ async def bulk_tasks(pid: str, data: BulkTaskInput, u=Depends(current_user)):
     p = await project_for(u, pid, 'task.write')
     q = {'id': {'$in': data.ids}, 'project_id': pid}
     if data.delete:
-        await db.tasks.delete_many(q); await db.project_documents.update_many({'task_id': {'$in': data.ids}}, {'$set': {'is_deleted': True}})
-        return {'message': f'{len(data.ids)} task dihapus.'}
+        async for t in db.tasks.find(q, {'_id': 0}): await trash_item(u, 'tasks', t, 'task', t['title'])
+        await db.project_documents.update_many({'task_id': {'$in': data.ids}}, {'$set': {'is_deleted': True}})
+        return {'message': f'{len(data.ids)} task dipindahkan ke arsip.'}
     update = {k: v for k, v in data.model_dump(exclude_none=True).items() if k in ['status', 'assigned_to', 'priority']}
     if 'status' in update and update['status'] not in status_names(p): raise HTTPException(400, 'Status tidak valid.')
     if update.get('assigned_to'): await validate_assignee(update['assigned_to'], p)
     if not update: raise HTTPException(400, 'Tidak ada perubahan.')
     await db.tasks.update_many(q, {'$set': {**update, 'updated_at': now()}})
+    await log_activity(u, 'ubah massal', 'task', '', f'{len(data.ids)} task', pid, update)
     if 'status' in update:
         async for t in db.tasks.find(q, {'_id': 0}): await sync_source(t, update['status'], p)
     return {'message': f'{len(data.ids)} task diperbarui.'}
@@ -196,15 +205,17 @@ async def edit_task(pid: str, tid: str, data: TaskUpdate, u=Depends(current_user
     await db.tasks.update_one({'id': tid}, {'$set': update})
     if update.get('assigned_to') and update['assigned_to'] != t.get('assigned_to'): await notify_assignment(update['assigned_to'], 'task Kanban', update.get('title', t['title']), pid, update.get('due_date', t.get('due_date')))
     if 'status' in update and update['status'] != t['status']: await sync_source(t, update['status'], p)
+    changed = {k: v for k, v in update.items() if k != 'updated_at' and t.get(k) != v}
+    if changed and set(changed) != {'order'}: await log_activity(u, 'ubah status' if 'status' in changed else 'ubah', 'task', tid, t['title'], pid, {'dari': t['status'], 'ke': changed['status']} if 'status' in changed else changed)
     return await one(tid, u)
 
 @router.delete('/projects/{pid}/tasks/{tid}')
 async def delete_task(pid: str, tid: str, u=Depends(current_user)):
-    await task_for(u, pid, tid, 'task.write')
-    await db.tasks.delete_one({'id': tid})
+    p, t = await task_for(u, pid, tid, 'task.write')
+    comments = await db.task_comments.find({'task_id': tid}, {'_id': 0}).to_list(1000)
+    await trash_item(u, 'tasks', t, 'task', t['title'], [{'collection': 'task_comments', 'docs': comments}])
     await db.project_documents.update_many({'task_id': tid}, {'$set': {'is_deleted': True}})
-    await db.task_comments.delete_many({'task_id': tid})
-    return {'message': 'Task dihapus.'}
+    return {'message': 'Task dipindahkan ke arsip.'}
 
 # ---------- subtasks ----------
 @router.post('/projects/{pid}/tasks/{tid}/subtasks', response_model=Record)
@@ -254,6 +265,7 @@ async def delete_comment(pid: str, tid: str, cid: str, u=Depends(current_user)):
     if u['role'] not in MANAGERS: q['author_id'] = u['id']
     r = await db.task_comments.delete_one(q)
     if not r.deleted_count: raise HTTPException(404, 'Komentar tidak ditemukan.')
+    await log_activity(u, 'hapus', 'komentar', cid, '', pid, {'task_id': tid})
     return {'message': 'Komentar dihapus.'}
 
 # ---------- time tracking ----------
@@ -285,6 +297,7 @@ async def delete_time(pid: str, tid: str, eid: str, u=Depends(current_user)):
     if not e: raise HTTPException(404, 'Catatan waktu tidak ditemukan.')
     if u['role'] not in MANAGERS and e['user_id'] != u['id']: raise HTTPException(403, 'Hanya pemilik catatan yang dapat menghapus.')
     await db.tasks.update_one({'id': tid}, {'$pull': {'time_entries': {'id': eid}}, '$set': {'updated_at': now()}})
+    await log_activity(u, 'hapus', 'catatan waktu', eid, t['title'], pid, {'detik': e.get('seconds'), 'oleh': e.get('user_name')})
     return await one(tid, u)
 
 # ---------- documents ----------

@@ -10,8 +10,9 @@ class Record(BaseModel):
 class Login(Input):
     username: str
     password: str
-    captcha_id: str
-    captcha_answer: str
+    captcha_id: str = ''
+    captcha_answer: str = ''
+    recaptcha_token: str = ''
     remember: bool = False
 class PasswordChange(Input):
     current_password: str
@@ -39,7 +40,8 @@ class ProjectInput(Input):
     name: str = Field(min_length=3, max_length=150)
     client_id: str
     description: str = ''
-    category: str = 'Web Development'
+    platforms: list[str] = Field(min_length=1)
+    category: str = ''
     type: Literal['Kecil','Besar'] = 'Besar'
     value: float = Field(default=0, ge=0)
     start_date: date
@@ -49,6 +51,9 @@ class ProjectInput(Input):
     @model_validator(mode='after')
     def check_dates(self):
         if self.due_date < self.start_date: raise ValueError('Deadline harus setelah tanggal mulai.')
+        self.platforms = [p.strip() for p in self.platforms if p.strip()]
+        if not self.platforms: raise ValueError('Pilih minimal satu platform.')
+        self.category = ', '.join(self.platforms)
         return self
 class StatusInput(Input):
     status: str
@@ -69,7 +74,10 @@ class WorkInput(Input):
     description: str = ''
     kind: str
     assigned_to: str = ''
-    due_date: date
+    entry_date: Optional[date] = None
+    started_date: Optional[date] = None
+    due_date: Optional[date] = None
+    priority: Literal['Rendah','Sedang','Tinggi','Mendesak'] = 'Sedang'
     estimate: float = Field(default=0, ge=0)
     subtasks: list[str] = []
 ServerStage = Literal['Belum Naik','Dev Server','Production']
@@ -144,8 +152,12 @@ class ExpenseInput(Input):
     date: date
     note: str = ''
 class WorkUpdate(Input):
-    status: Literal['Terbuka','Dikerjakan','Selesai']
+    status: str
     approved: bool = False
+    started_date: Optional[date] = None
+    due_date: Optional[date] = None
+    priority: Optional[Literal['Rendah','Sedang','Tinggi','Mendesak']] = None
+    estimate: Optional[float] = Field(default=None, ge=0)
 class DeployInput(Input):
     environment: Literal['Development','Production']
     url: str = Field(pattern=r'^https?://[^\s]+$')

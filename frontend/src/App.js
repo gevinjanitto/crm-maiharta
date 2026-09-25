@@ -19,6 +19,8 @@ import Finance from "./pages/Finance";
 import WorkList from "./pages/WorkList";
 import Users from "./pages/Users";
 import Settings from "./pages/Settings";
+import Trash from "./pages/Trash";
+import Audit from "./pages/Audit";
 import "./App.css";
 import "./modern.css";
 import "./kanban.css";
@@ -134,6 +136,22 @@ export default function App() {
               }
             />
             <Route path="settings" element={<Settings />} />
+            <Route
+              path="trash"
+              element={
+                <Protected roles={["Admin", "Admin Project"]}>
+                  <Trash />
+                </Protected>
+              }
+            />
+            <Route
+              path="audit"
+              element={
+                <Protected roles={["Admin"]}>
+                  <Audit />
+                </Protected>
+              }
+            />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

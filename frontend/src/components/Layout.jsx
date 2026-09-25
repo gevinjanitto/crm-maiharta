@@ -10,6 +10,8 @@ import {
   Ticket,
   ShieldCheck,
   Settings,
+  Trash2,
+  ScrollText,
   LogOut,
   Search,
   Menu,
@@ -52,7 +54,11 @@ export default function Layout() {
       ? "Detail Project"
       : location.pathname === "/users"
         ? "Manajemen User"
-        : "Pengaturan");
+        : location.pathname === "/trash"
+          ? "Recycle Bin"
+          : location.pathname === "/audit"
+            ? "Audit Trail"
+            : "Pengaturan");
   return (
     <div className="app-shell">
       {open && (
@@ -119,6 +125,18 @@ export default function Layout() {
             <NavLink className="nav-item" to="/users" data-testid="nav-users">
               <ShieldCheck size={18} />
               Manajemen User
+            </NavLink>
+          )}
+          {user.role === "Admin" && (
+            <NavLink className="nav-item" to="/audit" data-testid="nav-audit">
+              <ScrollText size={18} />
+              Audit Trail
+            </NavLink>
+          )}
+          {["Admin", "Admin Project"].includes(user.role) && (
+            <NavLink className="nav-item" to="/trash" data-testid="nav-trash">
+              <Trash2 size={18} />
+              Recycle Bin
             </NavLink>
           )}
           <NavLink

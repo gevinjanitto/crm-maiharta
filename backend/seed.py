@@ -48,3 +48,16 @@ async def backfill_tasks():
             st = {'Dikerjakan': 'Dikerjakan', 'Selesai': 'Selesai'}.get(w['status'], default)
             t = await create_task(w['project_id'], system, title=w['title'], description=w.get('description', ''), status=st, assigned_to=w.get('assigned_to', ''), due_date=w.get('due_date'), source=src, source_id=w['id'], tags=[w.get('kind', '')])
             await db[kind].update_one({'id': w['id']}, {'$set': {'task_id': t['id']}})
+
+async def migrate():
+    await db.maintenances.update_many({'status': 'Terbuka'}, {'$set': {'status': 'Belum dikerjakan'}})
+    await db.maintenances.update_many({'status': 'Dikerjakan'}, {'$set': {'status': 'Development'}})
+    await db.maintenances.update_many({'priority': {'$exists': False}}, {'$set': {'priority': 'Sedang'}})
+    await db.revisions.update_many({'priority': {'$exists': False}}, {'$set': {'priority': 'Sedang'}})
+    for coll in ['maintenances', 'revisions']:
+        async for w in db[coll].find({'entry_date': {'$exists': False}}, {'_id': 0, 'id': 1, 'created_at': 1}):
+            await db[coll].update_one({'id': w['id']}, {'$set': {'entry_date': (w.get('created_at') or now())[:10], 'started_date': None}})
+    async for p in db.projects.find({'platforms': {'$exists': False}}, {'_id': 0, 'id': 1, 'category': 1}):
+        c = p.get('category', '')
+        plat = ['Mobile Android', 'Mobile iOS'] if 'Mobile' in c else ['UI/UX Design'] if 'UI/UX' in c else ['Web']
+        await db.projects.update_one({'id': p['id']}, {'$set': {'platforms': plat}})

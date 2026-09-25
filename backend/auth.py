@@ -1,11 +1,13 @@
-import os, secrets, hashlib, bcrypt, jwt
+import os, secrets, hashlib, bcrypt, jwt, asyncio, requests
 from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
-from core import db, uid, now
+from core import db, uid, now, log_activity
 from schemas import Login, PasswordChange
 
 router = APIRouter(prefix='/auth')
 SECRET = os.environ['JWT_SECRET']
+RECAPTCHA_SECRET = os.environ.get('RECAPTCHA_SECRET_KEY', '').strip()
+RECAPTCHA_SITE = os.environ.get('RECAPTCHA_SITE_KEY', '').strip()
 def hash_password(p): return bcrypt.hashpw(p.encode(), bcrypt.gensalt()).decode()
 def verify_password(p, hashed):
     try: return bcrypt.checkpw(p.encode(), hashed.encode())
@@ -26,21 +28,33 @@ async def current_user(request: Request):
 
 @router.get('/captcha')
 async def captcha():
+    if RECAPTCHA_SECRET and RECAPTCHA_SITE: return {'provider': 'recaptcha', 'site_key': RECAPTCHA_SITE}
     a, b = secrets.randbelow(18) + 2, secrets.randbelow(9) + 1
     cid = uid()
     await db.captchas.insert_one({'id': cid, 'answer': hashlib.sha256(str(a+b).encode()).hexdigest(), 'expires_at': datetime.now(timezone.utc) + timedelta(minutes=5)})
-    return {'id': cid, 'question': f'{a} + {b} = ?'}
+    return {'provider': 'math', 'id': cid, 'question': f'{a} + {b} = ?'}
+
+def verify_recaptcha(token):
+    try:
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data={'secret': RECAPTCHA_SECRET, 'response': token}, timeout=8)
+        return bool(r.json().get('success'))
+    except Exception: return False
+
+async def check_captcha(data):
+    if RECAPTCHA_SECRET and RECAPTCHA_SITE:
+        if not data.recaptcha_token: return False
+        return await asyncio.to_thread(verify_recaptcha, data.recaptcha_token)
+    c = await db.captchas.find_one_and_delete({'id': data.captcha_id}, projection={'_id':0})
+    return bool(c and c['expires_at'].replace(tzinfo=timezone.utc) > datetime.now(timezone.utc) and secrets.compare_digest(c['answer'], hashlib.sha256(data.captcha_answer.encode()).hexdigest()))
 
 @router.post('/login')
 async def login(data: Login, request: Request, response: Response):
     key = hashlib.sha256(data.username.lower().encode()).hexdigest()
     attempts = await db.login_attempts.count_documents({'key': key, 'created_at': {'$gt': datetime.now(timezone.utc)-timedelta(minutes=10)}})
     if attempts >= 15: raise HTTPException(429, 'Terlalu banyak percobaan. Coba lagi dalam 10 menit.')
-    c = await db.captchas.find_one_and_delete({'id': data.captcha_id}, projection={'_id':0})
-    valid = c and c['expires_at'].replace(tzinfo=timezone.utc) > datetime.now(timezone.utc) and secrets.compare_digest(c['answer'], hashlib.sha256(data.captcha_answer.encode()).hexdigest())
-    if not valid:
+    if not await check_captcha(data):
         await db.login_attempts.insert_one({'key': key, 'created_at': datetime.now(timezone.utc)})
-        raise HTTPException(400, 'Jawaban CAPTCHA salah atau sudah kedaluwarsa.')
+        raise HTTPException(400, 'Verifikasi CAPTCHA gagal atau sudah kedaluwarsa.')
     u = await db.users.find_one({'username': data.username.lower(), 'active': True}, {'_id':0})
     if not u or not verify_password(data.password, u['password_hash']):
         await db.login_attempts.insert_one({'key': key, 'created_at': datetime.now(timezone.utc)})
@@ -51,6 +65,7 @@ async def login(data: Login, request: Request, response: Response):
     await db.sessions.insert_one({'id':sid, 'user_id':u['id'], 'expires_at':expires})
     token = jwt.encode({'sub':u['id'], 'jti':sid, 'exp':expires}, SECRET, algorithm='HS256')
     response.set_cookie('maiharta_session',token,httponly=True,secure=True,samesite='none',max_age=seconds,path='/')
+    await log_activity(u, 'login', 'sesi', u['id'], u['name'])
     return {'token':token,'user':public_user(u)}
 
 @router.get('/me')

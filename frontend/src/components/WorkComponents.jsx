@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { CalendarDays, ArrowUpRight, Pencil } from "lucide-react";
+import { CalendarDays, ArrowUpRight, Pencil, Trash2, Flag, Inbox, Play } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { api, useData, errorText, dateLabel, money } from "../lib/api";
@@ -33,7 +33,12 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
       description: "",
       kind: kind === "revisions" ? "In-scope" : "Adaptive",
       assigned_to: "",
-      due_date: new Date(Date.now() + 604800000).toISOString().slice(0, 10),
+      entry_date: new Date().toISOString().slice(0, 10),
+      started_date: "",
+      due_date: revision
+        ? new Date(Date.now() + 604800000).toISOString().slice(0, 10)
+        : "",
+      priority: "Sedang",
       estimate: 0,
       subtasks: "",
     });
@@ -63,6 +68,9 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
     try {
       const r = await api.post(`/projects/${project_id}/work/${kind}`, {
         ...body,
+        started_date: body.started_date || null,
+        due_date: body.due_date || null,
+        estimate: Number(body.estimate) || 0,
         subtasks: (subtasks || "").split("\n").filter((s) => s.trim()),
       });
       if (file && r.data.task_id) {
@@ -123,14 +131,41 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
             options={options}
             value={form.kind || options[0]}
             onChange={change}
+            required
+          />
+          <Field
+            label="Prioritas"
+            name="priority"
+            as="select"
+            options={["Rendah", "Sedang", "Tinggi", "Mendesak"]}
+            value={form.priority || "Sedang"}
+            onChange={change}
+            required
+          />
+          <Field
+            label="Tanggal masuk"
+            name="entry_date"
+            type="date"
+            value={form.entry_date || ""}
+            onChange={change}
+            required
+          />
+          <Field
+            label="Tanggal dikerjakan"
+            name="started_date"
+            type="date"
+            min={form.entry_date}
+            value={form.started_date || ""}
+            onChange={change}
           />
           <Field
             label="Target selesai"
             name="due_date"
             type="date"
+            min={form.entry_date}
             value={form.due_date || ""}
             onChange={change}
-            required
+            required={revision}
           />
           <Field
             label="PIC developer"
@@ -144,7 +179,7 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
             onChange={change}
           />
           <Field
-            label="Estimasi tambahan (Rp)"
+            label="Estimasi biaya tambahan (Rp)"
             name="estimate"
             type="number"
             min="0"
@@ -185,6 +220,9 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
             {error}
           </p>
         )}
+        <p className="form-legend">
+          <em>*</em> wajib diisi
+        </p>
         <div className="form-actions">
           <SaveButton busy={busy} />
         </div>
@@ -192,27 +230,51 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
     </Modal>
   );
 };
+const PRIO_COLOR = { Mendesak: "#e5484d", Tinggi: "#f5a623", Sedang: "#4f8ef7", Rendah: "#9aa4b8" };
 export const WorkCards = ({ rows, user, kind, reload, showProject = true }) => {
   const [editing, setEditing] = useState(null),
     [status, setStatus] = useState(""),
     [approved, setApproved] = useState(false),
+    [extra, setExtra] = useState({}),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
+  const maintenance = kind === "maintenances",
+    statusOptions = maintenance
+      ? ["Belum dikerjakan", "Development", "Testing", "Selesai"]
+      : ["Terbuka", "Dikerjakan", "Selesai"];
+  const manager = ["Admin", "Admin Project"].includes(user.role);
   const save = async (e) => {
     e.preventDefault();
     setBusy(true);
     try {
       await api.patch(
         `/projects/${editing.project_id}/work/${kind}/${editing.id}`,
-        { status, approved },
+        {
+          status,
+          approved,
+          started_date: extra.started_date || null,
+          due_date: extra.due_date || null,
+          priority: extra.priority || null,
+          estimate: extra.estimate === "" ? null : Number(extra.estimate),
+        },
       );
-      toast.success("Status diperbarui");
+      toast.success("Pekerjaan diperbarui");
       setEditing(null);
       reload();
     } catch (e) {
       setError(errorText(e));
     } finally {
       setBusy(false);
+    }
+  };
+  const remove = async (r) => {
+    if (!window.confirm(`Pindahkan "${r.title}" ke arsip?`)) return;
+    try {
+      await api.delete(`/projects/${r.project_id}/work/${kind}/${r.id}`);
+      toast.success("Dipindahkan ke arsip");
+      reload();
+    } catch (e) {
+      toast.error(errorText(e));
     }
   };
   return (
@@ -227,6 +289,16 @@ export const WorkCards = ({ rows, user, kind, reload, showProject = true }) => {
             <div className="section-heading">
               <Badge id={`work-status-${r.id}`}>{r.status}</Badge>
               <span className="sample-tag">{r.kind}</span>
+              {r.priority && (
+                <span
+                  className="sample-tag"
+                  style={{ color: PRIO_COLOR[r.priority], fontWeight: 700 }}
+                  data-testid={`work-priority-${r.id}`}
+                >
+                  <Flag size={12} fill="currentColor" style={{ display: "inline", marginRight: 4 }} />
+                  {r.priority}
+                </span>
+              )}
             </div>
             {showProject && (
               <Link
@@ -240,29 +312,50 @@ export const WorkCards = ({ rows, user, kind, reload, showProject = true }) => {
             )}
             <h3>{r.title}</h3>
             <p>{r.description || "—"}</p>
-            <div className="work-card-bottom">
-              <span>
-                <CalendarDays
-                  size={12}
-                  style={{ display: "inline", marginRight: 5 }}
-                />
-                {dateLabel(r.due_date)}
+            <div className="work-meta" data-testid={`work-dates-${r.id}`}>
+              <span title="Tanggal masuk">
+                <Inbox size={13} /> Masuk {dateLabel(r.entry_date || r.created_at)}
               </span>
+              <span title="Tanggal dikerjakan">
+                <Play size={13} /> Dikerjakan {r.started_date ? dateLabel(r.started_date) : "—"}
+              </span>
+              <span title="Target selesai">
+                <CalendarDays size={13} /> Target {r.due_date ? dateLabel(r.due_date) : "—"}
+              </span>
+            </div>
+            <div className="work-card-bottom">
+              <span>{r.assigned_to ? "PIC ditugaskan" : "Belum ada PIC"}</span>
               {r.estimate > 0 && <span>{money(r.estimate)}</span>}
-              {["Admin", "Admin Project"].includes(user.role) && (
-                <button
-                  className="icon-button"
-                  data-testid={`edit-work-${r.id}`}
-                  title="Perbarui status"
-                  onClick={() => {
-                    setEditing(r);
-                    setStatus(r.status);
-                    setApproved(r.approved || false);
-                    setError("");
-                  }}
-                >
-                  <Pencil size={14} />
-                </button>
+              {manager && (
+                <>
+                  <button
+                    className="icon-button"
+                    data-testid={`edit-work-${r.id}`}
+                    title="Perbarui pekerjaan"
+                    onClick={() => {
+                      setEditing(r);
+                      setStatus(r.status);
+                      setApproved(r.approved || false);
+                      setExtra({
+                        started_date: r.started_date || "",
+                        due_date: r.due_date || "",
+                        priority: r.priority || "Sedang",
+                        estimate: r.estimate ?? 0,
+                      });
+                      setError("");
+                    }}
+                  >
+                    <Pencil size={14} />
+                  </button>
+                  <button
+                    className="icon-button danger"
+                    data-testid={`delete-work-${r.id}`}
+                    title="Pindahkan ke arsip"
+                    onClick={() => remove(r)}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </>
               )}
             </div>
             {r.completed_at && (
@@ -284,14 +377,48 @@ export const WorkCards = ({ rows, user, kind, reload, showProject = true }) => {
         title="Perbarui pekerjaan"
       >
         <form onSubmit={save}>
-          <Field
-            label="Status"
-            name="status"
-            as="select"
-            options={["Terbuka", "Dikerjakan", "Selesai"]}
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-          />
+          <div className="form-grid">
+            <Field
+              label="Status pengerjaan"
+              name="status"
+              as="select"
+              options={statusOptions}
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              required
+            />
+            <Field
+              label="Prioritas"
+              name="priority"
+              as="select"
+              options={["Rendah", "Sedang", "Tinggi", "Mendesak"]}
+              value={extra.priority || "Sedang"}
+              onChange={(e) => setExtra({ ...extra, priority: e.target.value })}
+              required
+            />
+            <Field
+              label="Tanggal dikerjakan"
+              name="started_date"
+              type="date"
+              value={extra.started_date || ""}
+              onChange={(e) => setExtra({ ...extra, started_date: e.target.value })}
+            />
+            <Field
+              label="Target selesai"
+              name="due_date"
+              type="date"
+              value={extra.due_date || ""}
+              onChange={(e) => setExtra({ ...extra, due_date: e.target.value })}
+            />
+            <Field
+              label="Estimasi biaya tambahan (Rp)"
+              name="estimate"
+              type="number"
+              min="0"
+              value={extra.estimate ?? 0}
+              onChange={(e) => setExtra({ ...extra, estimate: e.target.value })}
+            />
+          </div>
           {["Out-of-scope", "Change Request"].includes(editing?.kind) && (
             <label className="checkbox-label" style={{ marginTop: 20 }}>
               <input

@@ -1,7 +1,7 @@
 import asyncio
 from urllib.parse import quote
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Response
-from core import db, uid, now, authorize, project_scope, project_for, project_public, log_event, validate_assignee, recalc_progress, MANAGERS, FINANCE, STATUSES
+from core import db, uid, now, authorize, project_scope, project_for, project_public, log_event, validate_assignee, recalc_progress, log_activity, trash_item, MANAGERS, FINANCE, STATUSES, MAINTENANCE_STATUSES, WORK_STATUSES
 from auth import current_user
 from schemas import Record, ProjectInput, StatusInput, FeatureInput, ProgressInput, CostInput, WorkInput, WorkUpdate, DeployInput
 from storage import get_object
@@ -26,6 +26,7 @@ async def create_project(data: ProjectInput,u=Depends(current_user)):
     p={**data.model_dump(mode='json'),'id':uid(),'code':f"MH-{number['value']:03d}",'client_name':c['name'],'status':STATUSES[0],'progress':0,'development_cost':0,'server_cost':0,'created_at':now(),'updated_at':now(),'created_by':u['id'],'production_at':None,'tickets_closed':False}
     await db.projects.insert_one(p.copy())
     await log_event(p['id'],u,'Project dibuat',to_status=STATUSES[0])
+    await log_activity(u,'buat','project',p['id'],p['name'],p['id'])
     return project_public(p,u)
 
 @router.get('/projects/{pid}',response_model=Record)
@@ -40,16 +41,19 @@ async def edit_project(pid:str,data:ProjectInput,u=Depends(current_user)):
     for dev in data.assigned_to: await validate_assignee(dev)
     await db.projects.update_one({'id':pid},{'$set':{**data.model_dump(mode='json'),'client_name':c['name'],'updated_at':now()}})
     await log_event(pid,u,'Informasi project diperbarui')
+    await log_activity(u,'ubah','project',pid,data.name,pid)
     return project_public(await project_for(u,pid),u)
 
 @router.delete('/projects/{pid}')
 async def delete_project(pid:str,u=Depends(current_user)):
     p=await project_for(u,pid,'project.write')
     if p['status']!='Project Masuk': raise HTTPException(400,'Hanya project baru yang dapat dihapus.')
-    await db.projects.delete_one({'id':pid})
-    for collection in ['project_features','project_documents','project_status_logs','revisions','maintenances','deployments','tickets','tasks','expenses']:
-        await db[collection].delete_many({'project_id':pid})
-    return {'message':'Project dihapus.'}
+    related=[]
+    for collection in ['project_features','project_documents','project_status_logs','revisions','maintenances','deployments','tickets','tasks','expenses','task_comments']:
+        docs=await db[collection].find({'project_id':pid},{'_id':0}).to_list(5000)
+        related.append({'collection':collection,'docs':docs})
+    await trash_item(u,'projects',p,'project',p['name'],related)
+    return {'message':'Project dipindahkan ke arsip.'}
 
 @router.post('/projects/{pid}/status',response_model=Record)
 async def change_status(pid:str,data:StatusInput,u=Depends(current_user)):
@@ -74,6 +78,7 @@ async def change_status(pid:str,data:StatusInput,u=Depends(current_user)):
     if data.status=='Selesai': update['progress']=100
     await db.projects.update_one({'id':pid},{'$set':update})
     await log_event(pid,u,f"{p['status']} → {data.status}",from_status=p['status'],to_status=data.status,note=data.note)
+    await log_activity(u,'ubah status','project',pid,p['name'],pid,{'dari':p['status'],'ke':data.status})
     return project_public({**p,**update},u)
 
 @router.get('/projects/{pid}/history',response_model=list[Record])
@@ -100,6 +105,7 @@ async def create_feature(pid:str,data:FeatureInput,u=Depends(current_user)):
     task=await create_task(pid,u,title=data.name,description=f"Fitur {data.category}",assigned_to=data.assigned_to,due_date=f['due_date'],source='feature',source_id=f['id'],tags=[data.category])
     await db.project_features.update_one({'id':f['id']},{'$set':{'task_id':task['id']}})
     await recalc_progress(pid)
+    await log_activity(u,'buat','fitur',f['id'],f['name'],pid)
     return {**f,'task_id':task['id']}
 
 FEATURE_TO_TASK={'Belum dimulai':'Belum Mulai','Dikerjakan':'Dikerjakan','Selesai':'Selesai'}
@@ -113,6 +119,7 @@ async def update_feature(pid:str,fid:str,data:ProgressInput,u=Depends(current_us
     await db.project_features.update_one({'id':fid,'project_id':pid},{'$set':{'status':data.status}})
     await sync_task_status('feature',fid,FEATURE_TO_TASK[data.status])
     await recalc_progress(pid)
+    await log_activity(u,'ubah status','fitur',fid,f['name'],pid,{'dari':f['status'],'ke':data.status})
     f['status']=data.status
     if u['role']=='Developer': f.pop('price',None)
     return f
@@ -120,11 +127,12 @@ async def update_feature(pid:str,fid:str,data:ProgressInput,u=Depends(current_us
 @router.delete('/projects/{pid}/features/{fid}')
 async def delete_feature(pid:str,fid:str,u=Depends(current_user)):
     await project_for(u,pid,'feature.write')
-    r=await db.project_features.delete_one({'id':fid,'project_id':pid})
-    if not r.deleted_count: raise HTTPException(404,'Fitur tidak ditemukan.')
-    await db.tasks.delete_many({'source':'feature','source_id':fid})
+    f=await db.project_features.find_one({'id':fid,'project_id':pid},{'_id':0})
+    if not f: raise HTTPException(404,'Fitur tidak ditemukan.')
+    tasks=await db.tasks.find({'source':'feature','source_id':fid},{'_id':0}).to_list(10)
+    await trash_item(u,'project_features',f,'fitur',f['name'],[{'collection':'tasks','docs':tasks}])
     await recalc_progress(pid)
-    return {'message':'Fitur dihapus.'}
+    return {'message':'Fitur dipindahkan ke arsip.'}
 
 @router.get('/projects/{pid}/costs')
 async def costs(pid:str,u=Depends(current_user)):
@@ -136,6 +144,7 @@ async def update_costs(pid:str,data:CostInput,u=Depends(current_user)):
     await project_for(u,pid,'cost.write')
     await db.projects.update_one({'id':pid},{'$set':data.model_dump()})
     await log_event(pid,u,'Biaya project diperbarui')
+    await log_activity(u,'ubah biaya','project',pid,'',pid,data.model_dump())
     return await costs(pid,u)
 
 @router.get('/projects/{pid}/documents',response_model=list[Record])
@@ -167,9 +176,12 @@ async def download_document(pid:str,did:str,u=Depends(current_user)):
 @router.delete('/projects/{pid}/documents/{did}')
 async def delete_document(pid:str,did:str,u=Depends(current_user)):
     await project_for(u,pid,'document.write')
-    r=await db.project_documents.update_one({'id':did,'project_id':pid,'is_deleted':False},{'$set':{'is_deleted':True}})
-    if not r.matched_count: raise HTTPException(404,'Dokumen tidak ditemukan.')
-    return {'message':'Dokumen dihapus.'}
+    d=await db.project_documents.find_one({'id':did,'project_id':pid,'is_deleted':False},{'_id':0})
+    if not d: raise HTTPException(404,'Dokumen tidak ditemukan.')
+    await db.project_documents.update_one({'id':did},{'$set':{'is_deleted':True}})
+    await db.trash.insert_one({'id':uid(),'collection':'project_documents','entity_type':'dokumen','entity_id':did,'name':d['name'],'project_id':pid,'data':d,'related':[],'deleted_by':u['id'],'deleted_by_name':u['name'],'deleted_at':now(),'soft':True})
+    await log_activity(u,'hapus','dokumen',did,d['name'],pid,{'ke_arsip':True})
+    return {'message':'Dokumen dipindahkan ke arsip.'}
 
 def work_action(kind):
     if kind not in ['revisions','maintenances']: raise HTTPException(404,'Modul tidak ditemukan.')
@@ -201,22 +213,45 @@ async def create_work(pid:str,kind:str,data:WorkInput,u=Depends(current_user)):
     if kind=='maintenances' and not p.get('production_at'): raise HTTPException(400,'Maintenance hanya dapat dibuat setelah project production.')
     await validate_assignee(data.assigned_to,p)
     body=data.model_dump(mode='json'); subtasks=body.pop('subtasks')
-    doc={**body,'id':uid(),'project_id':pid,'status':'Terbuka','approved':False,'created_at':now(),'completed_at':None,'created_by':u['id']}
-    task=await create_task(pid,u,title=data.title,description=data.description,status='Revisi' if kind=='revisions' else 'Belum Mulai',assigned_to=data.assigned_to,due_date=body['due_date'],source=work_action(kind),source_id=doc['id'],subtasks=subtasks)
+    body['entry_date']=body.get('entry_date') or now()[:10]
+    initial='Belum dikerjakan' if kind=='maintenances' else 'Terbuka'
+    if kind=='maintenances' and body.get('started_date'): initial='Development'
+    doc={**body,'id':uid(),'project_id':pid,'status':initial,'approved':False,'created_at':now(),'completed_at':None,'created_by':u['id']}
+    task=await create_task(pid,u,title=data.title,description=data.description,status='Revisi' if kind=='revisions' else ('Dikerjakan' if initial=='Development' else 'Belum Mulai'),assigned_to=data.assigned_to,due_date=body['due_date'],start_date=body.get('started_date'),priority=data.priority,source=work_action(kind),source_id=doc['id'],subtasks=subtasks,tags=[data.kind])
     doc['task_id']=task['id']
     await db[kind].insert_one(doc.copy())
+    await log_activity(u,'buat','revisi' if kind=='revisions' else 'maintenance',doc['id'],data.title,pid)
     return doc
+
+MAINT_TO_TASK={'Belum dikerjakan':'Belum Mulai','Development':'Dikerjakan','Testing':'Testing','Selesai':'Selesai','Terbuka':'Belum Mulai','Dikerjakan':'Dikerjakan'}
 
 @router.patch('/projects/{pid}/work/{kind}/{wid}',response_model=Record)
 async def update_work(pid:str,kind:str,wid:str,data:WorkUpdate,u=Depends(current_user)):
     await project_for(u,pid,work_action(kind)+'.write')
     doc=await db[kind].find_one({'id':wid,'project_id':pid},{'_id':0})
     if not doc: raise HTTPException(404,'Pekerjaan tidak ditemukan.')
-    if doc['kind'] in ['Out-of-scope','Change Request'] and data.status!='Terbuka' and (doc.get('estimate',0)<=0 or not (data.approved or doc.get('approved'))): raise HTTPException(400,'Pekerjaan di luar scope wajib memiliki estimasi biaya dan persetujuan.')
+    allowed=MAINTENANCE_STATUSES if kind=='maintenances' else WORK_STATUSES
+    if data.status not in allowed: raise HTTPException(400,'Status tidak valid.')
+    todo=allowed[0]
+    if doc['kind'] in ['Out-of-scope','Change Request'] and data.status!=todo and (max(doc.get('estimate',0),data.estimate or 0)<=0 or not (data.approved or doc.get('approved'))): raise HTTPException(400,'Pekerjaan di luar scope wajib memiliki estimasi biaya dan persetujuan.')
     update={'status':data.status,'approved':data.approved or doc.get('approved',False),'completed_at':now() if data.status=='Selesai' else None}
+    for k in ['started_date','due_date','priority','estimate']:
+        v=getattr(data,k)
+        if v is not None: update[k]=v.isoformat() if hasattr(v,'isoformat') else v
+    if kind=='maintenances' and data.status in ['Development','Testing'] and not update.get('started_date',doc.get('started_date')): update['started_date']=now()[:10]
     await db[kind].update_one({'id':wid,'project_id':pid},{'$set':update})
-    if data.status in ['Dikerjakan','Selesai'] and data.status!=doc['status']: await sync_task_status(work_action(kind),wid,data.status)
+    if data.status!=doc['status']: await sync_task_status(work_action(kind),wid,MAINT_TO_TASK.get(data.status,'Belum Mulai'))
+    await log_activity(u,'ubah','revisi' if kind=='revisions' else 'maintenance',wid,doc['title'],pid,{'dari':doc['status'],'ke':data.status})
     return {**doc,**update}
+
+@router.delete('/projects/{pid}/work/{kind}/{wid}')
+async def delete_work(pid:str,kind:str,wid:str,u=Depends(current_user)):
+    await project_for(u,pid,work_action(kind)+'.write')
+    doc=await db[kind].find_one({'id':wid,'project_id':pid},{'_id':0})
+    if not doc: raise HTTPException(404,'Pekerjaan tidak ditemukan.')
+    tasks=await db.tasks.find({'source':work_action(kind),'source_id':wid},{'_id':0}).to_list(10)
+    await trash_item(u,kind,doc,'revisi' if kind=='revisions' else 'maintenance',doc['title'],[{'collection':'tasks','docs':tasks}])
+    return {'message':'Pekerjaan dipindahkan ke arsip.'}
 
 @router.get('/projects/{pid}/deployments',response_model=list[Record])
 async def deployments(pid:str,u=Depends(current_user)):

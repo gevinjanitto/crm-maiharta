@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Navigate } from "react-router-dom";
+import ReCAPTCHA from "react-google-recaptcha";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
   ArrowRight,
@@ -21,7 +22,10 @@ export default function Login() {
   const [captcha, setCaptcha] = useState(null),
     [visible, setVisible] = useState(false),
     [busy, setBusy] = useState(false),
-    [error, setError] = useState("");
+    [error, setError] = useState(""),
+    [recaptchaToken, setRecaptchaToken] = useState("");
+  const recaptchaRef = useRef(null);
+  const siteKey = process.env.REACT_APP_RECAPTCHA_SITE_KEY;
   const [form, setForm] = useState({
     username: "",
     password: "",
@@ -40,6 +44,8 @@ export default function Login() {
       const r = await api.get("/auth/captcha");
       setCaptcha(r.data);
       setForm((f) => ({ ...f, captcha_answer: "" }));
+      setRecaptchaToken("");
+      recaptchaRef.current?.reset();
     } catch (e) {
       setError("CAPTCHA belum dapat dimuat. Silakan coba kembali.");
     }
@@ -60,7 +66,8 @@ export default function Login() {
     try {
       const r = await api.post("/auth/login", {
         ...form,
-        captcha_id: captcha.id,
+        captcha_id: captcha?.id || "",
+        recaptcha_token: recaptchaToken,
       });
       setToken(r.data.token);
       setUser(r.data.user);
@@ -221,6 +228,23 @@ export default function Login() {
                 </div>
               </label>
               <div className="captcha-block">
+                {captcha?.provider === "recaptcha" ? (
+                  <div className="login-field">
+                    <span>Verifikasi keamanan</span>
+                    <div className="recaptcha-wrap" data-testid="recaptcha-widget">
+                      <ReCAPTCHA
+                        ref={recaptchaRef}
+                        sitekey={captcha.site_key || siteKey}
+                        hl="id"
+                        onChange={(t) => setRecaptchaToken(t || "")}
+                        onExpired={() => setRecaptchaToken("")}
+                        onErrored={() =>
+                          setError("reCAPTCHA belum dapat dimuat. Muat ulang halaman.")
+                        }
+                      />
+                    </div>
+                  </div>
+                ) : (
                 <label className="login-field">
                   <span>Verifikasi keamanan</span>
                   <div className="captcha-row">
@@ -251,6 +275,7 @@ export default function Login() {
                     />
                   </div>
                 </label>
+                )}
               </div>
               <div className="login-options">
                 <label>
@@ -289,7 +314,11 @@ export default function Login() {
                 data-testid="login-submit"
                 type="submit"
                 className="login-submit"
-                disabled={busy || !captcha}
+                disabled={
+                  busy ||
+                  !captcha ||
+                  (captcha.provider === "recaptcha" && !recaptchaToken)
+                }
               >
                 {busy ? "Sedang masuk..." : "Masuk ke workspace"}
                 <ArrowRight size={18} />

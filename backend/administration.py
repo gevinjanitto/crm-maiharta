@@ -1,6 +1,6 @@
 import csv, io
 from fastapi import APIRouter,Depends,HTTPException,Response
-from core import db,uid,now,authorize,project_scope,project_public,FINANCE,MANAGERS,STATUSES,DEFAULT_CLIENT_PASSWORD
+from core import db,uid,now,authorize,project_scope,project_public,log_activity,FINANCE,MANAGERS,STATUSES,DEFAULT_CLIENT_PASSWORD
 from auth import current_user,hash_password,public_user
 from schemas import Record,ClientInput,UserInput,UserUpdate
 
@@ -23,6 +23,7 @@ async def add_user(data:UserInput,u=Depends(current_user)):
     row.update(id=uid(),username=data.username.lower(),password_hash=hash_password(data.password),active=True,created_at=now())
     try: await db.users.insert_one(row.copy())
     except Exception: raise HTTPException(409,'Username sudah digunakan.')
+    await log_activity(u,'buat','user',row['id'],row['name'],'',{'role':row['role']})
     return public_user(row)
 @router.patch('/users/{user_id}',response_model=Record)
 async def edit_user(user_id:str,data:UserUpdate,u=Depends(current_user)):
@@ -38,6 +39,7 @@ async def edit_user(user_id:str,data:UserUpdate,u=Depends(current_user)):
     merged={**row,**updates}
     if merged['role']=='Client' and not await db.clients.find_one({'id':merged.get('client_id','')},{'_id':0}): raise HTTPException(400,'Pilih client untuk akun ini.')
     await db.users.update_one({'id':user_id},{'$set':updates})
+    await log_activity(u,'ubah','user',user_id,row['name'],'',{k:v for k,v in updates.items() if k!='password_hash'}|({'reset_password':True} if new_password else {}))
     if updates.get('active') is False: await db.sessions.delete_many({'user_id':user_id})
     return public_user(merged)
 
@@ -52,6 +54,7 @@ async def add_client(data:ClientInput,u=Depends(current_user)):
     await authorize(u,'client.write')
     row={**data.model_dump(),'id':uid(),'created_at':now()}
     await db.clients.insert_one(row.copy())
+    await log_activity(u,'buat','client',row['id'],row['name'])
     username=data.email.lower()
     account={'username':username,'created':False}
     if not await db.users.find_one({'username':username},{'_id':0,'id':1}):
@@ -71,6 +74,7 @@ async def delete_client(cid:str,u=Depends(current_user)):
     if await db.projects.count_documents({'client_id':cid}) or await db.users.count_documents({'client_id':cid}): raise HTTPException(400,'Client masih terhubung dengan project atau akun.')
     r=await db.clients.delete_one({'id':cid})
     if not r.deleted_count: raise HTTPException(404,'Client tidak ditemukan.')
+    await log_activity(u,'hapus','client',cid,'')
     return {'message':'Client dihapus.'}
 
 @router.get('/dashboard')
