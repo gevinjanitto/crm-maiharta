@@ -30,7 +30,18 @@ import {
 } from "../components/ProjectTabs";
 import { DocumentsTab, DeploymentsTab } from "../components/DocumentTabs";
 import { ProjectWorkTab } from "../components/WorkComponents";
+<<<<<<< HEAD
 import { KanbanTab } from "../components/KanbanTab";
+=======
+<<<<<<< HEAD
+import { KanbanTab } from "../components/KanbanTab";
+=======
+<<<<<<< HEAD
+import { KanbanTab } from "../components/KanbanTab";
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
 export default function ProjectDetail() {
   const { id } = useParams(),
     { user } = useAuth(),
@@ -44,7 +55,18 @@ export default function ProjectDetail() {
     internal = ["Admin", "Admin Project", "Developer"].includes(user.role);
   const tabs = [
     "Ringkasan",
+<<<<<<< HEAD
     "Kanban",
+=======
+<<<<<<< HEAD
+    "Kanban",
+=======
+<<<<<<< HEAD
+    "Kanban",
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
     "Fitur",
     "Timeline",
     "Dokumen",
@@ -69,7 +91,15 @@ export default function ProjectDetail() {
         Semua project
       </Link>
       <PageHead
+<<<<<<< HEAD
         eyebrow={`${p.code} / ${(p.platforms || [p.category]).join(" · ")}`}
+=======
+<<<<<<< HEAD
+        eyebrow={`${p.code} / ${(p.platforms || [p.category]).join(" · ")}`}
+=======
+        eyebrow={`${p.code} / ${p.category}`}
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
         title={p.name}
         description={p.client_name}
       >
@@ -127,7 +157,18 @@ export default function ProjectDetail() {
       </div>
       <div className="detail-content" key={tab}>
         {tab === "Ringkasan" && <Overview p={p} user={user} reload={reload} />}{" "}
+<<<<<<< HEAD
         {tab === "Kanban" && <KanbanTab p={p} user={user} />}{" "}
+=======
+<<<<<<< HEAD
+        {tab === "Kanban" && <KanbanTab p={p} user={user} />}{" "}
+=======
+<<<<<<< HEAD
+        {tab === "Kanban" && <KanbanTab p={p} user={user} />}{" "}
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
         {tab === "Fitur" && (
           <FeaturesTab p={p} user={user} reloadProject={reload} />
         )}{" "}

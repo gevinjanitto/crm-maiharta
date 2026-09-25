@@ -3,6 +3,16 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   FolderKanban,
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  KanbanSquare,
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
   UsersRound,
   Wallet,
   RotateCcw,
@@ -10,12 +20,31 @@ import {
   Ticket,
   ShieldCheck,
   Settings,
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
   Trash2,
   ScrollText,
   LogOut,
   Search,
+<<<<<<< HEAD
   Menu,
   ChevronDown,
+=======
+=======
+  LogOut,
+  Search,
+<<<<<<< HEAD
+=======
+  Sun,
+  Moon,
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+  Menu,
+  ChevronDown,
+  ArrowUpRight,
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
   X,
 } from "lucide-react";
 import { useAuth } from "../App";
@@ -24,6 +53,21 @@ import { initials } from "../lib/api";
 const nav = [
   ["/", "Dashboard", LayoutDashboard],
   ["/projects", "Semua Project", FolderKanban],
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  [
+    "/kanban",
+    "Kanban",
+    KanbanSquare,
+    ["Admin", "Admin Project", "Developer", "Client"],
+  ],
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
   ["/clients", "Client", UsersRound, ["Admin", "Admin Project", "Accounting"]],
   ["/finance", "Keuangan", Wallet, ["Admin", "Accounting"]],
   ["/revisions", "Revisi", RotateCcw, ["Admin", "Admin Project", "Developer"]],
@@ -45,7 +89,27 @@ export default function Layout() {
     location = useLocation(),
     navigate = useNavigate();
   const [open, setOpen] = useState(false),
+<<<<<<< HEAD
     [search, setSearch] = useState("");
+=======
+<<<<<<< HEAD
+    [search, setSearch] = useState("");
+=======
+<<<<<<< HEAD
+    [search, setSearch] = useState("");
+=======
+    [search, setSearch] = useState(""),
+    [light, setLight] = useState(
+      localStorage.getItem("maiharta-theme") === "light",
+    );
+  useEffect(() => {
+    document.documentElement.classList.toggle("light-mode", light);
+    localStorage.setItem("maiharta-theme", light ? "light" : "dark");
+    return () => document.documentElement.classList.remove("light-mode");
+  }, [light]);
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
   useEffect(() => setOpen(false), [location.pathname]);
   const title =
     nav.find((n) => n[0] === location.pathname)?.[1] ||
@@ -53,11 +117,21 @@ export default function Layout() {
       ? "Detail Project"
       : location.pathname === "/users"
         ? "Manajemen User"
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
         : location.pathname === "/trash"
           ? "Recycle Bin"
           : location.pathname === "/audit"
             ? "Audit Trail"
             : "Pengaturan");
+<<<<<<< HEAD
+=======
+=======
+        : "Pengaturan");
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
   return (
     <div className="app-shell">
       {open && (
@@ -75,6 +149,13 @@ export default function Layout() {
           data-testid="sidebar-logo-link"
         >
           <img
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
             src="/assets/logo-mark.webp"
             alt="MaiHarta"
             data-testid="sidebar-logo"
@@ -86,6 +167,34 @@ export default function Layout() {
             <small>PROJECT WORKSPACE</small>
           </span>
         </NavLink>
+<<<<<<< HEAD
+=======
+        <div className="workspace-switch" data-testid="workspace-info">
+          <span className="workspace-icon">
+            <img src="/assets/logo-mark.webp" alt="" />
+          </span>
+<<<<<<< HEAD
+=======
+=======
+            src="/assets/logo.webp"
+            alt="MaiHarta"
+            data-testid="sidebar-logo"
+          />
+          <span>PROJECT WORKSPACE</span>
+        </NavLink>
+        <div className="workspace-switch" data-testid="workspace-info">
+          <span className="workspace-icon">M</span>
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+          <div>
+            <b>MaiHarta Workspace</b>
+            <small>
+              <span className="live-dot" /> Tim MaiHarta
+            </small>
+          </div>
+          <ChevronDown size={14} />
+        </div>
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
         <div className="nav-label">WORKSPACE</div>
         <nav>
           {nav
@@ -114,6 +223,10 @@ export default function Layout() {
               Manajemen User
             </NavLink>
           )}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
           {user.role === "Admin" && (
             <NavLink className="nav-item" to="/audit" data-testid="nav-audit">
               <ScrollText size={18} />
@@ -126,6 +239,11 @@ export default function Layout() {
               Recycle Bin
             </NavLink>
           )}
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
           <NavLink
             className="nav-item"
             to="/settings"
@@ -134,6 +252,7 @@ export default function Layout() {
             <Settings size={18} />
             Pengaturan
           </NavLink>
+<<<<<<< HEAD
         </div>
         <button
           className="sidebar-profile"
@@ -148,6 +267,31 @@ export default function Layout() {
           </span>
           <LogOut size={17} />
         </button>
+=======
+          <div className="sidebar-note" data-testid="sidebar-brand-note">
+            <span>MAKE GOOD THINGS HAPPEN.</span>
+            <p>
+              Bersama, melangkah
+              <br />
+              lebih jauh.
+            </p>
+            <ArrowUpRight size={22} />
+          </div>
+          <button
+            className="sidebar-profile"
+            data-testid="logout-button"
+            onClick={logout}
+            title="Keluar"
+          >
+            <span className="avatar">{initials(user.name)}</span>
+            <span className="profile-copy">
+              <b>{user.name}</b>
+              <small>{user.role}</small>
+            </span>
+            <LogOut size={17} />
+          </button>
+        </div>
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
       </aside>
       <div className="main-shell">
         <header className="topbar">
@@ -181,6 +325,23 @@ export default function Layout() {
               />
               <span>↵</span>
             </form>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+            <button
+              data-testid="toggle-theme"
+              className="icon-button"
+              onClick={() => setLight(!light)}
+              title={light ? "Mode gelap" : "Mode terang"}
+            >
+              {light ? <Moon size={19} /> : <Sun size={19} />}
+            </button>
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
             <span className="topbar-separator" />
             <button
               className="topbar-profile"

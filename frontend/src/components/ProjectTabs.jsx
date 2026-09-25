@@ -1,4 +1,15 @@
+<<<<<<< HEAD
 import { ExpensesPanel } from "./Expenses";
+=======
+<<<<<<< HEAD
+import { ExpensesPanel } from "./Expenses";
+=======
+<<<<<<< HEAD
+import { ExpensesPanel } from "./Expenses";
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
 import React, { useState, useEffect } from "react";
 import { Plus, Trash2, Check, Clock, Code2 } from "lucide-react";
 import { toast } from "sonner";
@@ -293,7 +304,18 @@ export const CostsTab = ({ p, user, reloadProject }) => {
           ["Nilai project", data.value],
           ["Biaya development", data.development_cost],
           ["Biaya server", data.server_cost],
+<<<<<<< HEAD
           ["Biaya lainnya", data.other_cost],
+=======
+<<<<<<< HEAD
+          ["Biaya lainnya", data.other_cost],
+=======
+<<<<<<< HEAD
+          ["Biaya lainnya", data.other_cost],
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
           ["Estimasi profit", data.profit],
         ].map(([n, v], i) => (
           <div
@@ -306,6 +328,13 @@ export const CostsTab = ({ p, user, reloadProject }) => {
           </div>
         ))}
       </div>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
       <ExpensesPanel
         p={p}
         onChange={() => {
@@ -320,6 +349,17 @@ export const CostsTab = ({ p, user, reloadProject }) => {
             Nilai ini otomatis terhitung dari pengeluaran di atas; ubah manual
             hanya jika diperlukan.
           </p>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+      {user.role === "Admin" && (
+        <form onSubmit={save} style={{ maxWidth: 580 }}>
+          <h2 className="detail-heading">Perbarui biaya internal</h2>
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
           <div className="form-grid">
             <Field
               label="Biaya development (Rp)"

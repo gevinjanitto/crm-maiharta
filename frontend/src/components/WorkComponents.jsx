@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
+<<<<<<< HEAD
 import { CalendarDays, ArrowUpRight, Pencil, Trash2, Flag, Inbox, Play } from "lucide-react";
+=======
+<<<<<<< HEAD
+import { CalendarDays, ArrowUpRight, Pencil, Trash2, Flag, Inbox, Play } from "lucide-react";
+=======
+import { CalendarDays, ArrowUpRight, Pencil } from "lucide-react";
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { api, useData, errorText, dateLabel, money } from "../lib/api";
@@ -12,15 +20,32 @@ import {
   Field,
   SaveButton,
   Badge,
+<<<<<<< HEAD
   SubtaskInput,
+=======
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
 } from "./Common";
 export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
   const [projects, setProjects] = useState([]),
     [team, setTeam] = useState([]),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
+<<<<<<< HEAD
     [form, setForm] = useState({}),
     [file, setFile] = useState(null);
+=======
+<<<<<<< HEAD
+    [form, setForm] = useState({}),
+    [file, setFile] = useState(null);
+=======
+<<<<<<< HEAD
+    [form, setForm] = useState({}),
+    [file, setFile] = useState(null);
+=======
+    [form, setForm] = useState({});
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
   const revision = kind === "revisions",
     options = revision
       ? ["In-scope", "Out-of-scope", "Change Request"]
@@ -34,6 +59,10 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
       description: "",
       kind: kind === "revisions" ? "In-scope" : "Adaptive",
       assigned_to: "",
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
       entry_date: new Date().toISOString().slice(0, 10),
       started_date: "",
       due_date: revision
@@ -41,9 +70,26 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
         : "",
       priority: "Sedang",
       estimate: 0,
+<<<<<<< HEAD
       subtasks: [],
     });
     setFile(null);
+=======
+      subtasks: "",
+    });
+    setFile(null);
+=======
+      due_date: new Date(Date.now() + 604800000).toISOString().slice(0, 10),
+      estimate: 0,
+<<<<<<< HEAD
+      subtasks: "",
+    });
+    setFile(null);
+=======
+    });
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
     Promise.all([api.get("/projects"), api.get("/team")])
       .then(([p, t]) => {
         setProjects(
@@ -65,14 +111,31 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
   const save = async (e) => {
     e.preventDefault();
     setBusy(true);
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
     const { project_id, subtasks, ...body } = form;
     try {
       const r = await api.post(`/projects/${project_id}/work/${kind}`, {
         ...body,
+<<<<<<< HEAD
         started_date: body.started_date || null,
         due_date: body.due_date || null,
         estimate: Number(body.estimate) || 0,
         subtasks: subtasks || [],
+=======
+<<<<<<< HEAD
+        started_date: body.started_date || null,
+        due_date: body.due_date || null,
+        estimate: Number(body.estimate) || 0,
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+        subtasks: (subtasks || "").split("\n").filter((s) => s.trim()),
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
       });
       if (file && r.data.task_id) {
         const f = new FormData();
@@ -84,6 +147,18 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
       toast.success(
         `${revision ? "Revisi" : "Maintenance"} ditambahkan & masuk ke Kanban`,
       );
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+    const { project_id, ...body } = form;
+    try {
+      await api.post(`/projects/${project_id}/work/${kind}`, body);
+      toast.success(`${revision ? "Revisi" : "Maintenance"} ditambahkan`);
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
       onSaved();
       onClose();
     } catch (e) {
@@ -132,6 +207,10 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
             options={options}
             value={form.kind || options[0]}
             onChange={change}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
             required
           />
           <Field
@@ -158,15 +237,32 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
             min={form.entry_date}
             value={form.started_date || ""}
             onChange={change}
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
           />
           <Field
             label="Target selesai"
             name="due_date"
             type="date"
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
             min={form.entry_date}
             value={form.due_date || ""}
             onChange={change}
             required={revision}
+<<<<<<< HEAD
+=======
+=======
+            value={form.due_date || ""}
+            onChange={change}
+            required
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
           />
           <Field
             label="PIC developer"
@@ -180,7 +276,15 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
             onChange={change}
           />
           <Field
+<<<<<<< HEAD
             label="Estimasi biaya tambahan (Rp)"
+=======
+<<<<<<< HEAD
+            label="Estimasi biaya tambahan (Rp)"
+=======
+            label="Estimasi tambahan (Rp)"
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
             name="estimate"
             type="number"
             min="0"
@@ -196,12 +300,27 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
               onChange={change}
             />
           </div>
+<<<<<<< HEAD
           <div className="form-full">
             <SubtaskInput
               label="Subtask Kanban"
               testid="work-subtask"
               value={form.subtasks || []}
               onChange={(l) => setForm((f) => ({ ...f, subtasks: l }))}
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+          <div className="form-full">
+            <Field
+              label="Subtask Kanban (satu per baris)"
+              name="subtasks"
+              as="textarea"
+              placeholder={"Perbaiki layout mobile\nUpdate teks halaman"}
+              value={form.subtasks || ""}
+              onChange={change}
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
             />
           </div>
           <div className="form-full">
@@ -213,15 +332,32 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
               onChange={(e) => setFile(e.target.files[0])}
             />
           </div>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
         </div>
         {error && (
           <p className="form-error" data-testid="work-form-error">
             {error}
           </p>
         )}
+<<<<<<< HEAD
         <p className="form-legend">
           <em>*</em> wajib diisi
         </p>
+=======
+<<<<<<< HEAD
+        <p className="form-legend">
+          <em>*</em> wajib diisi
+        </p>
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
         <div className="form-actions">
           <SaveButton busy={busy} />
         </div>
@@ -229,11 +365,22 @@ export const WorkForm = ({ open, onClose, onSaved, kind, project }) => {
     </Modal>
   );
 };
+<<<<<<< HEAD
 const PRIO_COLOR = { Mendesak: "#e5484d", Tinggi: "#f5a623", Sedang: "#4f8ef7", Rendah: "#9aa4b8" };
+=======
+<<<<<<< HEAD
+const PRIO_COLOR = { Mendesak: "#e5484d", Tinggi: "#f5a623", Sedang: "#4f8ef7", Rendah: "#9aa4b8" };
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
 export const WorkCards = ({ rows, user, kind, reload, showProject = true }) => {
   const [editing, setEditing] = useState(null),
     [status, setStatus] = useState(""),
     [approved, setApproved] = useState(false),
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
     [extra, setExtra] = useState({}),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
@@ -242,12 +389,23 @@ export const WorkCards = ({ rows, user, kind, reload, showProject = true }) => {
       ? ["Belum dikerjakan", "Development", "Testing", "Selesai"]
       : ["Terbuka", "Dikerjakan", "Selesai"];
   const manager = ["Admin", "Admin Project"].includes(user.role);
+<<<<<<< HEAD
+=======
+=======
+    [busy, setBusy] = useState(false),
+    [error, setError] = useState("");
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
   const save = async (e) => {
     e.preventDefault();
     setBusy(true);
     try {
       await api.patch(
         `/projects/${editing.project_id}/work/${kind}/${editing.id}`,
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
         {
           status,
           approved,
@@ -258,6 +416,14 @@ export const WorkCards = ({ rows, user, kind, reload, showProject = true }) => {
         },
       );
       toast.success("Pekerjaan diperbarui");
+<<<<<<< HEAD
+=======
+=======
+        { status, approved },
+      );
+      toast.success("Status diperbarui");
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
       setEditing(null);
       reload();
     } catch (e) {
@@ -266,6 +432,10 @@ export const WorkCards = ({ rows, user, kind, reload, showProject = true }) => {
       setBusy(false);
     }
   };
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
   const remove = async (r) => {
     if (!window.confirm(`Pindahkan "${r.title}" ke arsip?`)) return;
     try {
@@ -276,6 +446,11 @@ export const WorkCards = ({ rows, user, kind, reload, showProject = true }) => {
       toast.error(errorText(e));
     }
   };
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
   return (
     <>
       <div className="work-card-list">
@@ -288,6 +463,10 @@ export const WorkCards = ({ rows, user, kind, reload, showProject = true }) => {
             <div className="section-heading">
               <Badge id={`work-status-${r.id}`}>{r.status}</Badge>
               <span className="sample-tag">{r.kind}</span>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
               {r.priority && (
                 <span
                   className="sample-tag"
@@ -298,6 +477,11 @@ export const WorkCards = ({ rows, user, kind, reload, showProject = true }) => {
                   {r.priority}
                 </span>
               )}
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
             </div>
             {showProject && (
               <Link
@@ -311,6 +495,10 @@ export const WorkCards = ({ rows, user, kind, reload, showProject = true }) => {
             )}
             <h3>{r.title}</h3>
             <p>{r.description || "—"}</p>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
             <div className="work-meta" data-testid={`work-dates-${r.id}`}>
               <span title="Tanggal masuk">
                 <Inbox size={13} /> Masuk {dateLabel(r.entry_date || r.created_at)}
@@ -355,6 +543,34 @@ export const WorkCards = ({ rows, user, kind, reload, showProject = true }) => {
                     <Trash2 size={14} />
                   </button>
                 </>
+<<<<<<< HEAD
+=======
+=======
+            <div className="work-card-bottom">
+              <span>
+                <CalendarDays
+                  size={12}
+                  style={{ display: "inline", marginRight: 5 }}
+                />
+                {dateLabel(r.due_date)}
+              </span>
+              {r.estimate > 0 && <span>{money(r.estimate)}</span>}
+              {["Admin", "Admin Project"].includes(user.role) && (
+                <button
+                  className="icon-button"
+                  data-testid={`edit-work-${r.id}`}
+                  title="Perbarui status"
+                  onClick={() => {
+                    setEditing(r);
+                    setStatus(r.status);
+                    setApproved(r.approved || false);
+                    setError("");
+                  }}
+                >
+                  <Pencil size={14} />
+                </button>
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
               )}
             </div>
             {r.completed_at && (
@@ -376,6 +592,10 @@ export const WorkCards = ({ rows, user, kind, reload, showProject = true }) => {
         title="Perbarui pekerjaan"
       >
         <form onSubmit={save}>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
           <div className="form-grid">
             <Field
               label="Status pengerjaan"
@@ -418,6 +638,19 @@ export const WorkCards = ({ rows, user, kind, reload, showProject = true }) => {
               onChange={(e) => setExtra({ ...extra, estimate: e.target.value })}
             />
           </div>
+<<<<<<< HEAD
+=======
+=======
+          <Field
+            label="Status"
+            name="status"
+            as="select"
+            options={["Terbuka", "Dikerjakan", "Selesai"]}
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+          />
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
           {["Out-of-scope", "Change Request"].includes(editing?.kind) && (
             <label className="checkbox-label" style={{ marginTop: 20 }}>
               <input

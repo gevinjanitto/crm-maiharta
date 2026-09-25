@@ -9,21 +9,44 @@ export default function WorkList({ kind }) {
     { data, loading, error, reload } = useData(`/work/${kind}`),
     [show, setShow] = useState(false),
     [search, setSearch] = useState(""),
+<<<<<<< HEAD
     [project, setProject] = useState(""),
+=======
+<<<<<<< HEAD
+    [project, setProject] = useState(""),
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
     [filter, setFilter] = useState("Semua");
   if (loading) return <Loading />;
   if (error) return <ErrorState error={error} reload={reload} />;
   const revision = kind === "revisions",
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
     statusTabs = revision
       ? ["Semua", "Terbuka", "Dikerjakan", "Selesai"]
       : ["Semua", "Belum dikerjakan", "Development", "Testing", "Selesai"],
     projects = [...new Map(data.map((r) => [r.project_id, r.project_name])).entries()],
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
     rows = data.filter(
       (r) =>
         (r.title + " " + r.project_name)
           .toLowerCase()
           .includes(search.toLowerCase()) &&
+<<<<<<< HEAD
         (!project || r.project_id === project) &&
+=======
+<<<<<<< HEAD
+        (!project || r.project_id === project) &&
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
         (filter === "Semua" || r.status === filter),
     );
   return (
@@ -68,7 +91,15 @@ export default function WorkList({ kind }) {
       </div>
       <div className="list-toolbar">
         <div className="filter-tabs">
+<<<<<<< HEAD
           {statusTabs.map((t) => (
+=======
+<<<<<<< HEAD
+          {statusTabs.map((t) => (
+=======
+          {["Semua", "Terbuka", "Dikerjakan", "Selesai"].map((t) => (
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
             <button
               key={t}
               data-testid={`work-filter-${t}`}
@@ -79,6 +110,10 @@ export default function WorkList({ kind }) {
             </button>
           ))}
         </div>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
         <select
           className="filter-select"
           data-testid="work-project-filter"
@@ -92,6 +127,11 @@ export default function WorkList({ kind }) {
             </option>
           ))}
         </select>
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
         <div className="list-search">
           <Search size={15} />
           <input

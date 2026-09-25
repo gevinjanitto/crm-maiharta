@@ -1,6 +1,10 @@
 import React from "react";
+<<<<<<< HEAD
 import { ArrowUpRight, Download, Inbox, LoaderCircle, Plus, X } from "lucide-react";
 import { motion, animate } from "framer-motion";
+=======
+import { ArrowUpRight, Inbox, LoaderCircle, Plus, X } from "lucide-react";
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import {
@@ -98,6 +102,10 @@ export const Field = ({
   name,
   as = "input",
   options = [],
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
   hint,
   ...props
 }) => (
@@ -113,6 +121,15 @@ export const Field = ({
         <small className="opt-mark">(opsional)</small>
       )}
     </span>
+<<<<<<< HEAD
+=======
+=======
+  ...props
+}) => (
+  <label className="form-field">
+    <span>{label}</span>
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
     {as === "select" ? (
       <select data-testid={`field-${name}`} name={name} {...props}>
         {options.map((o) => (
@@ -131,6 +148,7 @@ export const Field = ({
     )}
   </label>
 );
+<<<<<<< HEAD
 export const SubtaskInput = ({
   label = "Subtask",
   value = [],
@@ -205,6 +223,8 @@ export const SubtaskInput = ({
     </label>
   );
 };
+=======
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
 export const Modal = ({ open, onClose, title, description, children }) => (
   <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
     <DialogContent className="app-modal" data-testid="form-modal">
@@ -229,6 +249,7 @@ export const SaveButton = ({ busy, label = "Simpan" }) => (
     {busy ? "Menyimpan..." : label}
   </Button>
 );
+<<<<<<< HEAD
 export const ExportButton = ({
   onExport,
   children,
@@ -283,6 +304,8 @@ export const CountUp = ({ value = 0, format, duration = 1.1 }) => {
   }, [value, duration]);
   return <>{format ? format(n) : Math.round(n).toLocaleString("id-ID")}</>;
 };
+=======
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
 export const Progress = ({ value, id }) => (
   <div className="progress-wrapper" data-testid={id}>
     <div className="progress-track">

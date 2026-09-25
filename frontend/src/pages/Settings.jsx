@@ -42,12 +42,27 @@ export default function Settings() {
         title="Pengaturan"
         description="Ruang kerja Anda, kenyamanan Anda."
       />
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
       {user.must_change_password && (
         <div className="force-password" data-testid="force-password-banner">
           Ini login pertama Anda. Demi keamanan, silakan ganti password default
           sebelum melanjutkan ke menu lain.
         </div>
       )}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> b246b9f0dcd59f93e220dafc66ccfd5b50d9cc1b
+>>>>>>> abb7b4276f614088423817f4dc75effc576b2e5b
+>>>>>>> 0641a06cd4d77fcddb9db1930ccf186521511ad2
       <div className="settings-layout">
         <section className="panel panel-padding">
           <div className="section-heading">
