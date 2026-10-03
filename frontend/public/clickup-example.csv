@@ -1,0 +1,3 @@
+Task ID,Task Name,Description,Status,Assignee,Priority,Start Date,Due Date,Tags,Time Estimate,Parent ID,Space Name,Folder Name,List Name
+CU-EXAMPLE-001,Contoh task ClickUp,Contoh data untuk pratinjau impor,to do,developer,normal,2026-10-01,2026-10-15,Backend,7200000,,Workspace Contoh,Project Contoh,Development
+CU-EXAMPLE-002,Contoh subtask,Pemeriksaan hasil,complete,admin,low,2026-10-01,2026-10-10,QA,3600000,CU-EXAMPLE-001,Workspace Contoh,Project Contoh,Development
