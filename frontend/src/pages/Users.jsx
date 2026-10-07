@@ -223,7 +223,7 @@ export default function Users() {
         title={editing ? `Edit ${editing.name}` : "User baru"}
       >
         <form onSubmit={save}>
-          <div className="form-grid">
+          <div className="form-grid user-form-grid">
             <Field
               label="Nama lengkap"
               name="name"

@@ -23,3 +23,8 @@
 .user-delete-confirm { background: #d6404e !important; color: #fff !important; display: inline-flex; gap: 6px; align-items: center; }
 .user-delete-confirm:hover { background: #bd3341 !important; }
 @media (max-width: 520px) { .welcome-body { padding: 20px 18px; } .welcome-actions button { flex: 1; justify-content: center; } }
+.user-form-grid .form-field:has(select[name="role"]),
+.user-form-grid .form-field:has(select[name="client_id"]),
+.user-form-grid .form-field:has(input[name="active"]) { grid-column: 1 / -1; }
+.user-form-grid .form-field select[name="role"],
+.user-form-grid .form-field select[name="client_id"] { width: 100%; }
