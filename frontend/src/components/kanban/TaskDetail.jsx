@@ -11,8 +11,6 @@ import {
   Send,
   Clock,
   Tag,
-  Maximize2,
-  Minimize2,
   Copy,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -62,9 +60,21 @@ export const TaskDetail = ({ task, tasks, project, user, team, statuses, onClose
     [file, setFile] = useState(null),
     [minutes, setMinutes] = useState(""),
     [note, setNote] = useState(""),
-    [wide, setWide] = useState(false),
     [duplicating, setDuplicating] = useState(false);
+  const drawerRef = useRef(null);
   const docs = useData(`${base}/documents`);
+  useEffect(() => {
+    // Klik di luar popup task (tab, sidebar, header, dll.) langsung menutup popup.
+    const keep = '[data-radix-popper-content-wrapper],[role="dialog"],[role="alertdialog"],[role="menu"],[role="listbox"],.pw-modal,[data-sonner-toaster],[data-sonner-toast]';
+    const h = (e) => {
+      const target = e.target;
+      if (!(target instanceof Element) || !target.isConnected) return;
+      if (drawerRef.current?.contains(target) || target.closest(keep)) return;
+      onClose();
+    };
+    document.addEventListener("mousedown", h, true);
+    return () => document.removeEventListener("mousedown", h, true);
+  }, [onClose]);
   useTick(!!task.running_entry);
   useEffect(() => {
     setTitle(task.title);
@@ -111,7 +121,8 @@ export const TaskDetail = ({ task, tasks, project, user, team, statuses, onClose
   return (
     <div className="ck-overlay" data-testid="task-detail-overlay">
       <aside
-        className={`ck-drawer ${wide ? "wide" : ""}`}
+        ref={drawerRef}
+        className="ck-drawer"
         onMouseDown={(e) => e.stopPropagation()}
         data-testid="task-detail"
         role="dialog"
@@ -125,9 +136,6 @@ export const TaskDetail = ({ task, tasks, project, user, team, statuses, onClose
               <span className={`ck-source src-${task.source}`}>{SOURCE_LABEL[task.source]}</span>
             </span>
             <span className="ck-spacer" />
-            <button className="ck-icon" data-testid="resize-task-detail" onClick={() => setWide(!wide)} title="Ubah ukuran">
-              {wide ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
-            </button>
             {manager && <button className="ck-icon" data-testid="duplicate-task-btn" title="Duplikasi task" disabled={duplicating} onClick={async () => { setDuplicating(true); try { const r = await api.post(`${base}/duplicate`); onDuplicate(r.data); toast.success('Salinan task dibuat'); } catch (e) { toast.error(errorText(e)); } finally { setDuplicating(false); } }}><Copy size={16} /></button>}
             {manager && (
               <button
