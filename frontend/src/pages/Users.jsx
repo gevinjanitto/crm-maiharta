@@ -60,7 +60,6 @@ export default function Users() {
             name: "",
             username: "",
             email: "",
-            password: "",
             whatsapp_number: "",
             role: "Developer",
             client_id: "",
@@ -80,7 +79,7 @@ export default function Users() {
       toast.success(
         editing
           ? "User berhasil diperbarui"
-          : "User dibuat. Notifikasi selamat datang dikirim ke in-app, email & WhatsApp.",
+          : "User dibuat dengan password awal 12345678. Notifikasi selamat datang dikirim ke in-app, email & WhatsApp.",
       );
       setShow(false);
       reload();
@@ -257,20 +256,6 @@ export default function Users() {
               onChange={change}
               placeholder="+628123456789"
             />
-            {!editing && (
-              <>
-                <Field
-                  label="Password awal"
-                  name="password"
-                  type="password"
-                  minLength={10}
-                  value={form.password || ""}
-                  onChange={change}
-                  autoComplete="new-password"
-                  required
-                />
-              </>
-            )}
             <Field
               label="Role"
               name="role"
@@ -296,10 +281,10 @@ export default function Users() {
           </div>
           {!editing && (
             <p className="form-note">
-              Password minimal 10 karakter. Notifikasi selamat datang beserta
-              username & password awal dikirim via in-app, email, dan WhatsApp
-              (jika nomor diisi). Pengguna wajib mengganti password saat pertama
-              kali login.
+              Password awal otomatis <b>12345678</b> (sama seperti akun Client).
+              Notifikasi selamat datang beserta username & password awal dikirim
+              via in-app, email, dan WhatsApp (jika nomor diisi). Pengguna wajib
+              mengganti password saat pertama kali login.
             </p>
           )}
           {formError && (

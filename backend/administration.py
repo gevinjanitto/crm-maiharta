@@ -37,13 +37,13 @@ async def add_user(data:UserInput,u=Depends(current_user)):
     if data.role=='Client' and not await db.clients.find_one({'id':data.client_id},{'_id':0}): raise HTTPException(400,'Akun Client harus terhubung ke client yang valid.')
     try: number=normalize_phone(data.whatsapp_number)
     except ValueError as e: raise HTTPException(400,str(e))
-    row={k:v for k,v in data.model_dump().items() if k not in ('password','whatsapp_number')}
-    row.update(id=uid(),username=data.username.lower(),password_hash=hash_password(data.password),active=True,must_change_password=True,welcome_pending=True,created_at=now(),**_wa_fields(number,'admin_created'))
+    row={k:v for k,v in data.model_dump().items() if k not in ('password','whatsapp_number')}  # password awal selalu default, sama seperti akun Client
+    row.update(id=uid(),username=data.username.lower(),password_hash=hash_password(DEFAULT_CLIENT_PASSWORD),active=True,must_change_password=True,welcome_pending=True,created_at=now(),**_wa_fields(number,'admin_created'))
     try: await db.users.insert_one(row.copy())
     except Exception: raise HTTPException(409,'Username sudah digunakan.')
     await log_activity(u,'buat','user',row['id'],row['name'],'',{'role':row['role']})
-    await send_welcome(row,u,data.password)
-    return public_user(row)
+    await send_welcome(row,u,DEFAULT_CLIENT_PASSWORD)
+    return public_user(row)|{'default_password':DEFAULT_CLIENT_PASSWORD}
 @router.patch('/users/{user_id}',response_model=Record)
 async def edit_user(user_id:str,data:UserUpdate,u=Depends(current_user)):
     await authorize(u,'user.manage')

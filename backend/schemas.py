@@ -36,7 +36,6 @@ class UserInput(Input):
     name: str = Field(min_length=2, max_length=100)
     username: str = Field(min_length=3, max_length=50, pattern=r'^[a-zA-Z0-9_.-]+$')
     email: EmailStr
-    password: str = Field(min_length=10, max_length=72)
     role: Literal['Admin','Admin Project','Developer','Accounting','Client']
     client_id: str = ''
     whatsapp_number: str = Field(default='', max_length=30)
