@@ -24,12 +24,16 @@ def _wa_fields(number,source):
     if not number: return {}
     return {'whatsapp_number':number,'notification_preferences':{'in_app':True,'email':True,'whatsapp':True},'whatsapp_opt_in_at':now(),'whatsapp_opt_in_source':source}
 async def send_welcome(account,actor,password=''):
-    """Selamat datang: in-app (popup saat login) + email + WhatsApp, diarahkan ke halaman login."""
+    """Selamat datang: in-app (popup saat login) + email + WhatsApp, diarahkan ke halaman login.
+    Password awal hanya dikirim lewat WhatsApp; email tanpa kredensial agar tidak dianggap phishing/spam."""
     title=f"Selamat datang di CRM Maiharta, {account['name']}"
-    base=f"Akun Anda telah dibuat oleh {actor['name']} dengan role {account['role']}. Username: {account['username']}."
-    in_app=base+" Saat pertama kali masuk, Anda wajib mengganti password awal di menu Pengaturan."
-    external=base+(f" Password awal: {password}." if password else '')+" Silakan masuk ke CRM Maiharta. Saat pertama kali masuk, Anda wajib mengganti password awal dengan password baru (minimal 10 karakter)."
-    await notify([account['id']],title,in_app,'akun','/','','user',account['id'],None,external={'message':external,'link':'/login'})
+    base=f"Akun Anda di CRM Maiharta sudah aktif dengan role {account['role']}. Username Anda: {account['username']}."
+    first_login=" Saat pertama kali masuk, Anda akan diminta membuat password baru (minimal 10 karakter)."
+    in_app=base+first_login
+    where="sudah kami kirim melalui WhatsApp ke nomor Anda" if account.get('whatsapp_number') else "dapat Anda tanyakan kepada Admin"
+    email_msg=base+f" Password awal {where}."+first_login
+    wa_msg=base+(f" Password awal: {password}." if password else '')+first_login
+    await notify([account['id']],title,in_app,'akun','/','','user',account['id'],None,external={'message':email_msg,'whatsapp_message':wa_msg,'link':'/login'})
 @router.post('/users',response_model=Record)
 async def add_user(data:UserInput,u=Depends(current_user)):
     await authorize(u,'user.manage')

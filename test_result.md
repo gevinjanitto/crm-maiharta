@@ -117,6 +117,20 @@ backend:
         - working: true
           agent: "testing"
           comment: "✓ TESTED: PATCH /api/users/{id} works correctly. Username lowercased automatically. Duplicate username 'admin' returns 409. Duplicate email returns 409. After username change, login with new username works, old username fails. WhatsApp number normalized to E.164 format (+6281234567892)."
+  - task: "Welcome email anti-spam + logo fix"
+    implemented: true
+    working: true
+    file: "backend/email_template.py, backend/administration.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "User reported welcome email in spam + broken logo. Email no longer contains literal password (only WA gets 'Password awal: 12345678'); email says password sent via WA or ask Admin. Subject no duplicate 'CRM Maiharta:' prefix. CTA 'Masuk ke CRM Maiharta' to /login. Logo from EMAIL_LOGO_URL (raw.githubusercontent) fallback APP_URL/assets/logo-mark-white.png, inside navy tile, alt 'MH'. Default password for new users is 12345678 (no password field in POST /api/users)."
+        - working: true
+          agent: "testing"
+          comment: "✅ TESTED: All welcome email anti-spam + logo requirements verified. (1) Email template logo <img> src is https EMAIL_LOGO_URL (raw.githubusercontent.com/gevinjanitto/crm-maiharta/main/frontend/public/assets/logo-mark-white.png), fetches 200 image/png, alt='MH'. (2) Email HTML & text do NOT contain '12345678' or 'Password awal:'. WhatsApp text contains 'Password awal: 12345678'. (3) Subject correct 'Selamat datang di CRM Maiharta, [name]' (no duplicate prefix). (4) CTA 'Masuk ke CRM Maiharta' links to /login. (5) mailer._assert_safe_email passes. (6) Fallback logo (APP_URL/assets/logo-mark-white.png) works when EMAIL_LOGO_URL unset, returns 200 image/png. (7) Message routing correct: in-app notification does NOT contain password (security); email message says 'sudah kami kirim melalui WhatsApp' when WA exists, 'dapat Anda tanyakan kepada Admin' when not; WhatsApp message contains password; in-app notification stored in db does NOT contain password. (8) POST /api/users (no password field) returns 200, default_password='12345678', must_change_password=true; login with 12345678 works. (9) Regression: GET /api/projects (8 projects), GET /api/users OK. All tests passed."
   - task: "Permanent delete user"
     implemented: true
     working: true
@@ -185,7 +199,8 @@ metadata:
   test_sequence: 2
   run_ui: false
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Welcome email anti-spam + logo fix"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -194,3 +209,5 @@ agent_communication:
     message: "Seed admin login: username admin, password = SEED_PASSWORD in /app/backend/.env. Login needs math captcha: GET /api/auth/captcha -> {id, question 'a + b = ?'} then POST /api/auth/login {username,password,captcha_id,captcha_answer}. Use Bearer token. Use @maiharta.example emails for test users (example domains are skipped for real email). Do NOT use real phone numbers for WhatsApp. Do not print secrets."
   - agent: "testing"
     message: "✅ ALL BACKEND TESTS PASSED (7/7). Tested: (1) User creation with WhatsApp normalization, invalid WA validation, duplicate username check. (2) Complete welcome flow: must_change_password, welcome_pending flags, welcome notification with kind='akun', in-app message without password, password change clearing must_change_password, welcome-seen clearing welcome_pending. (3) User edit with name/username/email/whatsapp updates, username lowercasing, duplicate username/email checks, login with new username. (4) User delete: admin can delete, user removed from list, login fails, self-delete blocked, non-admin blocked (403), unknown ID returns 404. (5) User deactivation works. (6) Client creation with auto account having correct flags and welcome notification. (7) Projects regression: GET /api/projects works, items have start_date. All test users/clients cleaned up. No issues found."
+  - agent: "testing"
+    message: "✅ WELCOME EMAIL ANTI-SPAM + LOGO FIX VERIFIED (Bug fix complete). Comprehensive testing confirms: (1) Logo URL is https from EMAIL_LOGO_URL (raw.githubusercontent), returns 200 image/png, alt='MH'. (2) Email HTML/text do NOT contain password (anti-spam). WhatsApp text contains password. (3) Subject correct, no duplicate prefix. (4) CTA correct. (5) Email passes safety checks. (6) Fallback logo works. (7) Message routing correct: in-app no password, email mentions WA or Admin, WhatsApp has password. (8) POST /api/users API works, login with default password works. (9) Regression tests pass. User-reported bug 'welcome email masuk spam dan logo crash' is FIXED. Email no longer contains password (reduces spam score), logo is not broken (https URL works)."
